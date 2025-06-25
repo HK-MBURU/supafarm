@@ -12,28 +12,22 @@
 
 <div class="featured-products">
     <h2>Our Products</h2>
-    
+
     <div class="product-cards">
+        @foreach($categories as $category)
         <div class="product-card">
-            <img src="{{ asset('images/honey.jpg') }}" alt="Organic Honey">
-            <h3>Organic Honey</h3>
-            <p>Pure, natural honey from our farm</p>
+            @if($category->image_url)
+            <img src="{{ $category->image_url }}" alt="{{ $category->name }}">
+            @else
+            <img src="{{ asset('images/no-image-available.jpg') }}" alt="No image available" class="img-fluid">
+            @endif
+            <h3>{{$category->name}}</h3>
+            <p>{{$category->description}}</p>
             <a href="/products/honey" class="btn-secondary">View Details</a>
         </div>
-        
-        <div class="product-card">
-            <img src="{{ asset('images/eggs.jpg') }}" alt="Farm Fresh Eggs">
-            <h3>Farm Fresh Eggs</h3>
-            <p>Free-range eggs from happy hens</p>
-            <a href="/products/eggs" class="btn-secondary">View Details</a>
-        </div>
-        
-        <div class="product-card">
-            <img src="{{ asset('images/coffee.jpg') }}" alt="Premium Coffee">
-            <h3>Premium Coffee</h3>
-            <p>Freshly roasted coffee beans</p>
-            <a href="/products/coffee" class="btn-secondary">View Details</a>
-        </div>
+        @endforeach
+
+
     </div>
 </div>
 
