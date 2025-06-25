@@ -29,27 +29,27 @@ class ProductResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(191),
-                Forms\Components\TextInput::make('slug')
-                    ->required()
-                    ->maxLength(191),
-                Forms\Components\Textarea::make('description')
+                Forms\Components\MarkdownEditor::make('description')
                     ->columnSpanFull(),
                 Forms\Components\Textarea::make('features')
                     ->columnSpanFull(),
                 Forms\Components\TextInput::make('price')
                     ->required()
                     ->numeric()
-                    ->prefix('$'),
+                    ->prefix('Ksh'),
+                Forms\Components\FileUpload::make('image')
+                    ->columns(1)
+                    ->multiple()
+                    ->directory('products-images')
+                    ->storeFileNamesIn('original_filename')
+                    ->image(),
+
                 Forms\Components\TextInput::make('sale_price')
                     ->numeric(),
                 Forms\Components\TextInput::make('stock')
                     ->required()
                     ->numeric()
                     ->default(0),
-                Forms\Components\TextInput::make('sku')
-                    ->label('SKU')
-                    ->required()
-                    ->maxLength(191),
                 Forms\Components\Toggle::make('is_featured')
                     ->required(),
                 Forms\Components\Toggle::make('is_active')
@@ -68,12 +68,11 @@ class ProductResource extends Resource
                 Tables\Columns\TextColumn::make('category.name')
                     ->numeric()
                     ->sortable(),
+                Tables\Columns\ImageColumn::make('image'),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('slug')
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('price')
-                    ->money()
+                    ->money('KES')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('sale_price')
                     ->numeric()
@@ -81,9 +80,6 @@ class ProductResource extends Resource
                 Tables\Columns\TextColumn::make('stock')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('sku')
-                    ->label('SKU')
-                    ->searchable(),
                 Tables\Columns\IconColumn::make('is_featured')
                     ->boolean(),
                 Tables\Columns\IconColumn::make('is_active')

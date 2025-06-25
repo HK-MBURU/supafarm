@@ -443,9 +443,7 @@ main {
     transition: transform 0.3s;
 }
 
-.product-card:hover {
-    transform: translateY(-5px);
-}
+
 
 .product-card img {
     width: 100%;

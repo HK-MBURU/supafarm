@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -13,38 +15,28 @@ class ProductController extends Controller
 
     public function show($category)
     {
-        // In a real application, you would fetch products from the database
-        $products = [];
+        // Find the category or throw 404
+        $category = Category::findOrFail($category);
+
+        // Get active products in this category with pagination
+        $products = Product::where('category_id', $category->id)
+            ->where('is_active', true)
+            ->orderBy('is_featured', 'desc') // Featured products first
+            ->orderBy('created_at', 'desc')  // Then newest products
+            ->paginate(12); // Show 12 products per page
+
+        // Count total products in this category (for display)
+        $totalProducts = Product::where('category_id', $category->id)
+            ->where('is_active', true)
+            ->count();
+
         
-        switch ($category) {
-            case 'honey':
-                $products = [
-                    ['id' => 1, 'name' => 'Raw Honey', 'price' => 12.99, 'image' => 'honey.jpg'],
-                    ['id' => 2, 'name' => 'Manuka Honey', 'price' => 24.99, 'image' => 'honey.jpg'],
-                    ['id' => 3, 'name' => 'Wildflower Honey', 'price' => 14.99, 'image' => 'honey.jpg'],
-                ];
-                break;
-            case 'eggs':
-                $products = [
-                    ['id' => 4, 'name' => 'Free-Range Eggs (Dozen)', 'price' => 5.99, 'image' => 'eggs.jpg'],
-                    ['id' => 5, 'name' => 'Organic Eggs (Dozen)', 'price' => 7.99, 'image' => 'eggs.jpg'],
-                    ['id' => 6, 'name' => 'Duck Eggs (Half Dozen)', 'price' => 8.99, 'image' => 'eggs.jpg'],
-                ];
-                break;
-            case 'coffee':
-                $products = [
-                    ['id' => 7, 'name' => 'Dark Roast Coffee', 'price' => 14.99, 'image' => 'coffee.jpg'],
-                    ['id' => 8, 'name' => 'Medium Roast Coffee', 'price' => 13.99, 'image' => 'coffee.jpg'],
-                    ['id' => 9, 'name' => 'Light Roast Coffee', 'price' => 12.99, 'image' => 'coffee.jpg'],
-                ];
-                break;
-            default:
-                return redirect('/products');
-        }
-        
+
         return view('products.category', [
             'category' => $category,
-            'products' => $products
+            'products' => $products,
+            'totalProducts' => $totalProducts,
+           
         ]);
     }
 }

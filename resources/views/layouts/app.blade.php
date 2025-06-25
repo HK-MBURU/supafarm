@@ -6,6 +6,9 @@
     <title>Supa Farm Supplies</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
+    
+    <!-- This line will include any styles pushed from child views -->
+    @stack('styles')
 </head>
 <body>
     <header class="main-header">
@@ -100,7 +103,8 @@
     
     <footer>
         <div class="footer-content">
-            <p>&copy; 2025 Supa Farm Supplies. All rights reserved.</p>
+            <p>&copy; {{ date('Y') }} Supa Farm Supplies. All rights reserved.</p>
+            
         </div>
     </footer>
     
@@ -120,5 +124,8 @@
             searchContainer.classList.toggle('active');
         });
     </script>
+    
+    <!-- This line will include any scripts pushed from child views -->
+    @stack('scripts')
 </body>
 </html>

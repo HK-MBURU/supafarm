@@ -23,7 +23,7 @@
             @endif
             <h3>{{$category->name}}</h3>
             <p>{{$category->description}}</p>
-            <a href="/products/honey" class="btn-secondary">View Details</a>
+            <a href="{{ route('products.category', $category->id) }}" class="btn-secondary">View Details</a>
         </div>
         @endforeach
 

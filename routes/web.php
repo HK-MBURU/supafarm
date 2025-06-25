@@ -17,7 +17,17 @@ Auth::routes();
 Route::get('/', [HomeController::class, 'index']);
 
 Route::get('/products', [ProductController::class, 'index']);
-Route::get('/products/{category}', [ProductController::class, 'show']);
+
+Route::get('/products/{category}', [ProductController::class, 'show'])->name('products.category');
+
+// Category products page
+Route::get('/products/category/{category}', [ProductController::class, 'show'])->name('products.category');
+
+// Individual product page
+Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
+
+// Cart routes
+Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
 
 Route::get('/about', function () {
     return view('about');
