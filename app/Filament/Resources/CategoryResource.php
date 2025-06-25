@@ -26,12 +26,13 @@ class CategoryResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(191),
-                Forms\Components\TextInput::make('slug')
-                    ->required()
-                    ->maxLength(191),
-                Forms\Components\Textarea::make('description')
+                Forms\Components\MarkdownEditor::make('description')
                     ->columnSpanFull(),
                 Forms\Components\FileUpload::make('image')
+                    ->columns(1)
+                    ->multiple()
+                    ->directory('categories-images')
+                    ->storeFileNamesIn('original_filename')
                     ->image(),
                 Forms\Components\Toggle::make('is_active')
                     ->required(),
@@ -43,8 +44,6 @@ class CategoryResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('slug')
                     ->searchable(),
                 Tables\Columns\ImageColumn::make('image'),
                 Tables\Columns\IconColumn::make('is_active')

@@ -12,14 +12,21 @@ class Category extends Model
 
     protected $fillable = [
         'name',
-        'slug',
         'description',
         'image',
         'is_active',
+    ];
+    protected $casts = [
+        'image' => 'array',
+        'original_filename' => 'array',
     ];
 
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);
+    }
+    public function getImageUrlAttribute()
+    {
+        return $this->image ? asset('storage/' . $this->image) : null;
     }
 }
