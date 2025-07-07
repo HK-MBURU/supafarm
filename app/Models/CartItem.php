@@ -14,6 +14,7 @@ class CartItem extends Model
         'cart_id',
         'product_id',
         'quantity',
+        'price',
     ];
 
     public function cart(): BelongsTo
@@ -24,5 +25,13 @@ class CartItem extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+    
+    /**
+     * Get the total price for this item
+     */
+    public function getTotalAttribute(): float
+    {
+        return $this->price * $this->quantity;
     }
 }
