@@ -16,7 +16,7 @@ class ProductController extends Controller
 
     public function show($category)
     {
-        
+
         // Find the category or throw 404
         $category = Category::findOrFail($category);
 
@@ -47,7 +47,6 @@ class ProductController extends Controller
         // Find the category or throw 404
         try {
             $category = Category::where('slug', $slug)->firstOrFail();
-            
         } catch (\Exception $e) {
             Log::error('Category not found: ' . $e->getMessage());
             abort(404);
@@ -72,6 +71,32 @@ class ProductController extends Controller
             'products' => $products,
             'totalProducts' => $totalProducts,
 
+        ]);
+    }
+
+    public function view($id)
+    {
+        // Find the product by ID or throw a 404 error if not found
+        $product = Product::findOrFail($id);
+
+        // Load the product's category relationship
+        $product->load('category');
+
+        // Get related products (products in the same category, excluding the current product)
+        $relatedProducts = Product::where('category_id', $product->category_id)
+            ->where('id', '!=', $product->id)
+            ->where('is_active', true)
+            ->inRandomOrder()
+            ->take(4)
+            ->get();
+
+        // You can load reviews if you have a reviews relationship
+        // $product->load('reviews');
+
+        // Return the view with the product and related data
+        return view('products.view', [
+            'product' => $product,
+            'relatedProducts' => $relatedProducts,
         ]);
     }
 }

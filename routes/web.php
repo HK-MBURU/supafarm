@@ -19,8 +19,11 @@ Auth::routes();
 Route::get('/', [HomeController::class, 'index']);
 
 Route::get('/products', [ProductController::class, 'index']);
+Route::get('/products/view/{id}', [ProductController::class, 'view'])->name('products.view');
 
 Route::get('/products/{category}', [ProductController::class, 'show'])->name('products.category');
+
+
 
 // Category products page
 Route::get('/products/category/{category}', [ProductController::class, 'show'])->name('products.category');
@@ -31,6 +34,8 @@ Route::get('/products/{product}', [ProductController::class, 'show'])->name('pro
 
 // Cart routes
 Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+
+Route::get('/cart/count', [CartController::class, 'getCount'])->name('cart.count');
 
 
 Route::get('/about',[AboutController::class, 'index'])->name('about.index');

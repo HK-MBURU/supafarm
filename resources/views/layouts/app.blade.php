@@ -6,19 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Supa Farm Supplies</title>
-    
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- Lightbox for Gallery -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css">
-    
+
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
     <link rel="stylesheet" href="{{ asset('css/alert.css') }}">
+
+    <link rel="stylesheet" href="{{ asset('css/notifications.css') }}">
 
     <!-- Push styles from child views -->
     @stack('styles')
@@ -38,7 +40,7 @@
             </div>
 
             <!-- Desktop Search Bar (only visible on desktop) -->
-            <div class="desktop-search">
+            <div class="desktop-search ">
                 <form action="/search" method="GET">
                     <input type="text" name="query" placeholder="Search for products...">
                     <button type="submit"><i class="fas fa-search"></i></button>
@@ -87,9 +89,9 @@
         </div>
         <ul>
             <li><a href="/">Home</a></li>
-            <li><a href="/products/honey">Honey</a></li>
-            <li><a href="/products/eggs">Eggs</a></li>
-            <li><a href="/products/coffee">Coffee</a></li>
+            @foreach(App\Models\Category::where('is_active', true)->take(4)->get() as $navCategory)
+            <li><a href="{{ route('products.page', $navCategory->slug) }}">{{ $navCategory->name }}</a></li>
+            @endforeach
             <li><a href="/about">About Us</a></li>
             <li><a href="/contact">Contact</a></li>
         </ul>
@@ -99,6 +101,7 @@
         @yield('content')
     </main>
 
+    <!-- Mobile Bottom Navigation -->
     <!-- Mobile Bottom Navigation -->
     <nav class="mobile-bottom-nav">
         <a href="/" class="nav-item">
@@ -111,7 +114,7 @@
         </a>
         <a href="{{ route('cart.index') }}" class="nav-item">
             <i class="fas fa-shopping-cart"></i>
-            <span>Cart ({{ $cartCount ?? 0 }})</span>
+            <span>Cart (<span class="mobile-cart-count">{{ $cartCount ?? 0 }}</span>)</span>
         </a>
     </nav>
 
@@ -123,15 +126,15 @@
 
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <!-- Lightbox JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
-    
+
     <!-- Custom JS -->
-    <script src="{{ asset('js/ajax-cart-script.js') }}"></script>
+    <script src="{{ asset('js/unified-cart.js') }}"></script>
 
     <script>
         // Menu toggle

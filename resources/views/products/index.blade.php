@@ -70,6 +70,8 @@
                 <div class="product-description">
                     {{ Str::limit($product->description, 100) }}
                 </div>
+                <!-- Notification container for AJAX cart responses -->
+                <div id="notification-container" class="notification-container"></div>
 
                 <div class="product-actions">
                     <form action="/cart/add" method="POST" class="cart-form">
@@ -87,7 +89,7 @@
                         </button>
                     </form>
 
-                    <a href="{{ url('/products/view/' . $product->id) }}" class="btn-view-details">
+                    <a href="{{ route('products.view', $product->id) }}" class="btn-view-details">
                         View Details
                     </a>
                 </div>

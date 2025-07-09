@@ -31,78 +31,49 @@ class CartController extends Controller
     {
         $request->validate([
             'product_id' => 'required|exists:products,id',
-            'quantity' => 'required|integer|min:1',
+            'quantity' => 'required|integer|min:1'
         ]);
 
-        $product = Product::findOrFail($request->product_id);
-        $cart = $this->getCart();
+        $productId = $request->input('product_id');
+        $quantity = $request->input('quantity');
 
-        // Check product availability
-        if (($product->stock ?? 0) < $request->quantity) {
-            if ($request->ajax()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Sorry, the requested quantity is not available in stock.'
-                ]);
-            }
-            return redirect()->back()->with('error', 'Sorry, the requested quantity is not available in stock.');
-        }
+        $product = Product::findOrFail($productId);
 
-        // Get current price (use sale price if available)
-        $price = $product->sale_price && $product->sale_price < $product->price
-            ? $product->sale_price
-            : $product->price;
-
-        // Check if this product is already in cart
-        $cartItem = CartItem::where('cart_id', $cart->id)
-            ->where('product_id', $product->id)
-            ->first();
-
-        if ($cartItem) {
-            // Update existing cart item
-            $newQuantity = $cartItem->quantity + $request->quantity;
-
-            // Check if new quantity exceeds stock
-            if (($product->stock ?? 0) < $newQuantity) {
-                if ($request->ajax()) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Sorry, we don\'t have enough stock to add more of this item.'
-                    ]);
-                }
-                return redirect()->back()->with('error', 'Sorry, we don\'t have enough stock to add more of this item.');
-            }
-
-            $cartItem->update([
-                'quantity' => $newQuantity,
-                'price' => $price,
-            ]);
-        } else {
-            // Create new cart item
-            CartItem::create([
-                'cart_id' => $cart->id,
-                'product_id' => $product->id,
-                'quantity' => $request->quantity,
-                'price' => $price,
-            ]);
-        }
-
-        // Recalculate cart total
-        $cart->recalculateTotal();
-
-        // Update cart count in session
-        $cartCount = $cart->items()->sum('quantity');
-        session(['cart_count' => $cartCount]);
-
-        if ($request->ajax()) {
+        // Check if product is in stock
+        if ($product->stock < $quantity) {
             return response()->json([
-                'success' => true,
-                'message' => $product->name . ' has been added to your cart!',
-                'cartCount' => $cartCount
-            ]);
+                'success' => false,
+                'message' => 'Not enough stock available.',
+            ], 422);
         }
 
-        return redirect()->back()->with('success', $product->name . ' has been added to your cart!');
+        // Get the cart from session or create a new one
+        $cart = session()->get('cart', []);
+
+        // If item exists in cart, update quantity
+        if (isset($cart[$productId])) {
+            $cart[$productId]['quantity'] += $quantity;
+        } else {
+            // Add new item to cart
+            $cart[$productId] = [
+                'product_id' => $product->id,
+                'name' => $product->name,
+                'price' => $product->sale_price > 0 ? $product->sale_price : $product->price,
+                'quantity' => $quantity,
+                'image' => $product->image_url,
+            ];
+        }
+
+        // Save cart back to session
+        session()->put('cart', $cart);
+
+        // Return success response
+        return response()->json([
+            'success' => true,
+            'message' => 'Product added to cart successfully.',
+            'product_name' => $product->name,
+            'cartCount' => array_sum(array_column($cart, 'quantity')),
+        ]);
     }
 
     /**
@@ -230,6 +201,17 @@ class CartController extends Controller
             'cartItems' => $cart->items()->with('product')->get(),
             'total' => $cart->total,
             'loginUser' => 'HK-MBURU', // Replace with Auth::user()->name if using auth
+        ]);
+    }
+
+    // Add this method to your CartController.php
+    public function getCount()
+    {
+        $cart = session()->get('cart', []);
+        $cartCount = array_sum(array_column($cart, 'quantity'));
+
+        return response()->json([
+            'cartCount' => $cartCount
         ]);
     }
 }

@@ -6,7 +6,7 @@
     --accent-color: #358ba2;
     --light-color: #ffffff;
     --text-color: #333333;
-    --header-height: 60px;
+    --header-height: 50px;
     --footer-height: 60px;
     --mobile-nav-height: 60px;
 }
@@ -132,6 +132,9 @@ ul {
         display: grid;
         grid-template-columns: 1fr 2fr 1fr;
         padding: 15px 40px;
+        /* Keep a consistent height - no extra padding at bottom */
+        height: auto;
+        min-height: var(--header-height);
     }
 
     .logo {
@@ -142,11 +145,29 @@ ul {
         font-size: 1.5rem;
     }
 
-    /* Show desktop search on desktop */
+    /* Show desktop search on desktop with proper spacing */
     .desktop-search {
         display: block;
         grid-column: 2;
         padding: 0 20px;
+        /* Position properly within the header */
+        align-self: center;
+    }
+
+    /* Improve search form appearance */
+    .desktop-search form {
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
+        position: relative;
+    }
+
+    .desktop-search input {
+        padding: 12px 15px;
+        border: 1px solid #e0e0e0;
+    }
+
+    .desktop-search button {
+        padding: 12px 20px;
     }
 
     /* Show desktop cart on desktop */
@@ -190,10 +211,15 @@ ul {
         display: none !important;
     }
 
-    /* Desktop Navigation */
+    /* Desktop Navigation - FIXED to prevent overlap */
     .desktop-nav {
         display: block;
         background-color: var(--primary-color);
+        position: relative;
+        z-index: 10; /* Ensure nav is below the header container */
+        /* Add a bit of space to separate from header */
+        margin-top: 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .desktop-nav ul {
