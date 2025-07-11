@@ -135,6 +135,7 @@
 
     <!-- Custom JS -->
     <script src="{{ asset('js/unified-cart.js') }}"></script>
+    <script src="{{ asset('js/cart-helper.js') }}"></script>
 
     <script>
         // Menu toggle

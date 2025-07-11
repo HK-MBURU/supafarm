@@ -47,37 +47,102 @@ class CartController extends Controller
             ], 422);
         }
 
-        // Get the cart from session or create a new one
-        $cart = session()->get('cart', []);
+        // Get or create cart
+        $cart = $this->getCart();
 
-        // If item exists in cart, update quantity
-        if (isset($cart[$productId])) {
-            $cart[$productId]['quantity'] += $quantity;
+        // Check if item already exists in cart
+        $existingItem = $cart->items()->where('product_id', $productId)->first();
+
+        if ($existingItem) {
+            // Update existing item quantity
+            $newQuantity = $existingItem->quantity + $quantity;
+            
+            // Check if new quantity exceeds stock
+            if ($product->stock < $newQuantity) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Not enough stock available. You already have ' . $existingItem->quantity . ' in your cart.',
+                ], 422);
+            }
+            
+            $existingItem->update(['quantity' => $newQuantity]);
         } else {
-            // Add new item to cart
-            $cart[$productId] = [
-                'product_id' => $product->id,
-                'name' => $product->name,
-                'price' => $product->sale_price > 0 ? $product->sale_price : $product->price,
+            // Create new cart item
+            $cart->items()->create([
+                'product_id' => $productId,
                 'quantity' => $quantity,
-                'image' => $product->image_url,
-            ];
+                'price' => $product->sale_price > 0 ? $product->sale_price : $product->price,
+            ]);
         }
 
-        // Save cart back to session
-        session()->put('cart', $cart);
+        // Recalculate cart total
+        $cart->recalculateTotal();
+
+        // Update cart count in session
+        $cartCount = $cart->items()->sum('quantity');
+        session(['cart_count' => $cartCount]);
 
         // Return success response
         return response()->json([
             'success' => true,
             'message' => 'Product added to cart successfully.',
             'product_name' => $product->name,
-            'cartCount' => array_sum(array_column($cart, 'quantity')),
+            'cartCount' => $cartCount,
         ]);
     }
 
     /**
-     * Update cart item quantity
+     * Update cart item quantity via AJAX
+     */
+    public function updateQuantity(Request $request, CartItem $cartItem)
+    {
+        $request->validate([
+            'quantity' => 'required|integer|min:1',
+        ]);
+
+        // Ensure the cart item belongs to the current cart
+        $cart = $this->getCart();
+        if ($cartItem->cart_id !== $cart->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized access.',
+            ], 403);
+        }
+
+        // Check product availability
+        $product = $cartItem->product;
+        if (($product->stock ?? 0) < $request->quantity) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Sorry, only ' . ($product->stock ?? 0) . ' items available in stock.',
+            ], 422);
+        }
+
+        // Update quantity
+        $cartItem->update([
+            'quantity' => $request->quantity,
+        ]);
+
+        // Recalculate cart total
+        $cart->refresh();
+        $cartTotal = $cart->recalculateTotal();
+
+        // Update cart count in session
+        $cartCount = $cart->items()->sum('quantity');
+        session(['cart_count' => $cartCount]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Cart updated successfully!',
+            'item_total' => number_format($cartItem->quantity * $cartItem->price, 2),
+            'cart_total' => number_format($cartTotal, 2),
+            'cart_count' => $cartCount,
+            'quantity' => $cartItem->quantity,
+        ]);
+    }
+
+    /**
+     * Update cart item quantity (for form submission fallback)
      */
     public function update(Request $request, CartItem $cartItem)
     {
@@ -112,7 +177,41 @@ class CartController extends Controller
     }
 
     /**
-     * Remove item from cart
+     * Remove item from cart via AJAX
+     */
+    public function removeItem(CartItem $cartItem)
+    {
+        // Ensure the cart item belongs to the current cart
+        $cart = $this->getCart();
+        if ($cartItem->cart_id !== $cart->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized access.',
+            ], 403);
+        }
+
+        $productName = $cartItem->product->name;
+        $cartItem->delete();
+
+        // Recalculate cart total
+        $cart->refresh();
+        $cartTotal = $cart->recalculateTotal();
+
+        // Update cart count in session
+        $cartCount = $cart->items()->sum('quantity');
+        session(['cart_count' => $cartCount]);
+
+        return response()->json([
+            'success' => true,
+            'message' => $productName . ' has been removed from your cart.',
+            'cart_total' => number_format($cartTotal, 2),
+            'cart_count' => $cartCount,
+            'cart_empty' => $cartCount === 0,
+        ]);
+    }
+
+    /**
+     * Remove item from cart (for form submission fallback)
      */
     public function remove(CartItem $cartItem)
     {
@@ -135,7 +234,29 @@ class CartController extends Controller
     }
 
     /**
-     * Clear the entire cart
+     * Clear the entire cart via AJAX
+     */
+    public function clearCart()
+    {
+        $cart = $this->getCart();
+        $cart->items()->delete();
+        $cart->total = 0;
+        $cart->save();
+
+        // Update cart count in session
+        session(['cart_count' => 0]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Your cart has been cleared.',
+            'cart_total' => '0.00',
+            'cart_count' => 0,
+            'cart_empty' => true,
+        ]);
+    }
+
+    /**
+     * Clear the entire cart (for form submission fallback)
      */
     public function clear()
     {
@@ -204,11 +325,13 @@ class CartController extends Controller
         ]);
     }
 
-    // Add this method to your CartController.php
+    /**
+     * Get cart count for AJAX requests
+     */
     public function getCount()
     {
-        $cart = session()->get('cart', []);
-        $cartCount = array_sum(array_column($cart, 'quantity'));
+        $cart = $this->getCart();
+        $cartCount = $cart->items()->sum('quantity');
 
         return response()->json([
             'cartCount' => $cartCount

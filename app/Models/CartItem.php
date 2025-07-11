@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CartItem extends Model
 {
@@ -17,21 +16,49 @@ class CartItem extends Model
         'price',
     ];
 
-    public function cart(): BelongsTo
+    protected $casts = [
+        'quantity' => 'integer',
+        'price' => 'decimal:2',
+    ];
+
+    /**
+     * Get the cart that owns the cart item
+     */
+    public function cart()
     {
         return $this->belongsTo(Cart::class);
     }
 
-    public function product(): BelongsTo
+    /**
+     * Get the product associated with the cart item
+     */
+    public function product()
     {
         return $this->belongsTo(Product::class);
     }
-    
+
     /**
-     * Get the total price for this item
+     * Get the total price for this cart item
      */
-    public function getTotalAttribute(): float
+    public function getTotalPriceAttribute()
     {
-        return $this->price * $this->quantity;
+        return $this->quantity * $this->price;
+    }
+
+    /**
+     * Boot the model
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Automatically update cart total when cart item is saved or deleted
+        static::saved(function ($cartItem) {
+            $cartItem->cart->recalculateTotal();
+        });
+
+        static::deleted(function ($cartItem) {
+            $cartItem->cart->recalculateTotal();
+        });
     }
 }
