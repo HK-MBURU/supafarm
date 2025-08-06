@@ -1724,7 +1724,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    // Attach event listeners to both buttons
+    // Attach event listeners to both buttons 
     if (placeOrderBtnDesktop) {
         placeOrderBtnDesktop.addEventListener('click', handleOrderSubmission);
     }

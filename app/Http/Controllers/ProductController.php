@@ -9,9 +9,26 @@ use Illuminate\Support\Facades\Log;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index($categorySlug = null)
     {
-        return view('products.index');
+        if ($categorySlug) {
+            // Find the category
+            $category = Category::where('slug', $categorySlug)->firstOrFail();
+
+            // Get products for this category
+            $products = Product::with('category')
+                ->where('category_id', $category->id)
+                ->where('is_active', true)
+                ->paginate(12);
+        } else {
+            // Show all products
+            $category = (object) ['name' => 'All Products'];
+            $products = Product::with('category')
+                ->where('is_active', true)
+                ->paginate(12);
+        }
+
+        return view('products.index', compact('products', 'category'));
     }
 
     public function show($category)

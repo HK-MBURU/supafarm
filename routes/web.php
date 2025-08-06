@@ -10,9 +10,7 @@ use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+
 
 Auth::routes();
 
@@ -49,9 +47,23 @@ Route::get('/contact', function () {
 
 Route::get('/search', function () {
     $query = request('query');
-    // In a real application, you would search your database here
-    return view('search', ['query' => $query]);
-});
+    $products = collect(); // Empty collection by default
+    
+    if ($query) {
+        $products = App\Models\Product::where('is_active', true)
+            ->where(function($q) use ($query) {
+                $q->where('name', 'like', '%' . $query . '%')
+                  ->orWhere('description', 'like', '%' . $query . '%');
+            })
+            ->with('category')
+            ->get();
+    }
+    
+    return view('search', [
+        'query' => $query,
+        'products' => $products
+    ]);
+})->name('search');
 
 
 
