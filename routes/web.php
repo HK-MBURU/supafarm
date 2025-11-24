@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ContactController;
@@ -21,6 +22,11 @@ Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/view/{id}', [ProductController::class, 'view'])->name('products.view');
 
 Route::get('/products/{category}', [ProductController::class, 'show'])->name('products.category');
+
+Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin']], function () {
+    Route::get('/supafarm-admin', [AdminController::class, 'index'])->name('admin.supafarm');
+});
+
 
 
 
@@ -48,17 +54,17 @@ Route::get('/contact', function () {
 Route::get('/search', function () {
     $query = request('query');
     $products = collect(); // Empty collection by default
-    
+
     if ($query) {
         $products = App\Models\Product::where('is_active', true)
-            ->where(function($q) use ($query) {
+            ->where(function ($q) use ($query) {
                 $q->where('name', 'like', '%' . $query . '%')
-                  ->orWhere('description', 'like', '%' . $query . '%');
+                    ->orWhere('description', 'like', '%' . $query . '%');
             })
             ->with('category')
             ->get();
     }
-    
+
     return view('search', [
         'query' => $query,
         'products' => $products
@@ -100,6 +106,7 @@ Route::group(['prefix' => 'checkout'], function () {
     // Success page
     Route::get('/success/{orderNumber}', [CheckoutController::class, 'success'])->name('checkout.success');
 });
+
 
 
 

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\CartCountMiddleware;
+use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\TrustProxies;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -15,6 +16,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->append(TrustProxies::class);
         $middleware->append(CartCountMiddleware::class);
+
+        // Register route middleware
+        $middleware->alias([
+            'admin' => AdminMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
