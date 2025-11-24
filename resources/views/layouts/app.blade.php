@@ -16,69 +16,85 @@
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://supafarmsupplies.com/">
+    <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:title" content="Supa Farm Supplies - Premium Eggs, Honey & Coffee in Kenya">
     <meta property="og:description"
         content="Kenya's leading supplier of fresh farm eggs, pure honey, and premium coffee. Quality products from Thika to your doorstep.">
-    <meta property="og:image" content="https://supafarmsupplies.com/images/og-image.jpg">
+    <meta property="og:image" content="{{ asset('images/social/og-image.jpg') }}">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:site_name" content="Supa Farm Supplies">
+    <meta property="og:locale" content="en_KE">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://supafarmsupplies.com/">
+    <meta property="twitter:url" content="{{ url()->current() }}">
     <meta property="twitter:title" content="Supa Farm Supplies - Premium Eggs, Honey & Coffee in Kenya">
     <meta property="twitter:description"
         content="Kenya's leading supplier of fresh farm eggs, pure honey, and premium coffee.">
-    <meta property="twitter:image" content="https://supafarmsupplies.com/images/og-image.jpg">
+    <meta property="twitter:image" content="{{ asset('images/social/twitter-image.jpg') }}">
+    <meta property="twitter:site" content="@supafarmsupplies">
 
-    <!-- Schema.org markup -->
+    <!-- Additional Social Meta Tags -->
+    <meta property="og:image:alt" content="Supa Farm Supplies - Fresh Farm Products in Kenya">
+    <meta property="twitter:image:alt" content="Supa Farm Supplies - Fresh Farm Products in Kenya">
+
     <!-- Schema.org markup -->
     <script type="application/ld+json">
-{
-    "@@context": "https://schema.org",
-    "@@type": "Store",
-    "name": "Supa Farm Supplies",
-    "description": "Kenya's leading supplier of fresh farm eggs, pure honey, and premium coffee",
-    "url": "https://supafarmsupplies.com",
-    "telephone": "+254726619243",
-    "address": {
-        "@@type": "PostalAddress",
-        "streetAddress": "Kihanya Building, Commercial Street",
-        "addressLocality": "Thika",
-        "addressCountry": "KE"
-    },
-    "geo": {
-        "@@type": "GeoCoordinates",
-        "latitude": "-1.0391",
-        "longitude": "37.0844"
-    },
-    "openingHours": "Mo-Su 08:00-18:00",
-    "priceRange": "$$",
-    "areaServed": ["Kenya", "International"],
-    "sameAs": [
-        "https://facebook.com/supafarmsupplies",
-        "https://instagram.com/supafarmsupplies",
-        "https://twitter.com/supafarmsupplies"
-    ]
-}
-</script>
+    {
+        "@@context": "https://schema.org",
+        "@@type": "Store",
+        "name": "Supa Farm Supplies",
+        "description": "Kenya's leading supplier of fresh farm eggs, pure honey, and premium coffee",
+        "url": "https://supafarmsupplies.com",
+        "telephone": "+254726619243",
+        "address": {
+            "@@type": "PostalAddress",
+            "streetAddress": "Kihanya Building, Commercial Street",
+            "addressLocality": "Thika",
+            "addressCountry": "KE"
+        },
+        "geo": {
+            "@@type": "GeoCoordinates",
+            "latitude": "-1.0391",
+            "longitude": "37.0844"
+        },
+        "openingHours": "Mo-Su 08:00-18:00",
+        "priceRange": "$$",
+        "areaServed": ["Kenya", "International"],
+        "logo": "{{ asset('images/logo/logo-wide.png') }}",
+        "image": "{{ asset('images/social/og-image.jpg') }}",
+        "sameAs": [
+            "https://facebook.com/supafarmsupplies",
+            "https://instagram.com/supafarmsupplies",
+            "https://twitter.com/supafarmsupplies"
+        ]
+    }
+    </script>
 
-    <!-- Favicon -->
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="manifest" href="/site.webmanifest">
-    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#bc450d">
+    <!-- Favicon and App Icons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/logo/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/favicons/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/favicons/favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ asset('images/favicons/site.webmanifest') }}">
+    <link rel="mask-icon" href="{{ asset('images/favicons/safari-pinned-tab.svg') }}" color="#bc450d">
+    <link rel="shortcut icon" href="{{ asset('images/favicons/favicon.ico') }}">
+
+    <!-- Additional App Icons -->
+    <link rel="icon" type="image/svg+xml" href="{{ asset('images/logo/logo.svg') }}">
     <meta name="msapplication-TileColor" content="#bc450d">
+    <meta name="msapplication-config" content="{{ asset('images/favicons/browserconfig.xml') }}">
     <meta name="theme-color" content="#bc450d">
 
     <!-- Canonical URL -->
-    <link rel="canonical" href="https://supafarmsupplies.com" />
+    <link rel="canonical" href="{{ url()->current() }}" />
 
     <!-- Robots -->
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+
+    <!-- Preload critical images -->
+    <link rel="preload" href="{{ asset('images/logo/logo.png') }}" as="image">
+    <link rel="preload" href="{{ asset('images/social/og-image.jpg') }}" as="image">
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -108,7 +124,9 @@
 
             <!-- Logo (visible on both mobile and desktop) -->
             <div class="logo">
-                <h1 itemprop="name">Supa Farm Supplies</h1>
+                <a href="/" itemprop="url">
+                    <h1 itemprop="name">Supa Farm Supplies</h1>
+                </a>
             </div>
 
             <!-- Desktop Search Bar (only visible on desktop) -->
