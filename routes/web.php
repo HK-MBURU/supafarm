@@ -139,15 +139,17 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin'], 'as' => 'a
     Route::get('orders/pending', [\App\Http\Controllers\Admin\OrderController::class, 'pending'])->name('orders.pending');
     Route::get('orders/delivery', [\App\Http\Controllers\Admin\OrderController::class, 'delivery'])->name('orders.delivery');
     Route::patch('orders/{order}/status', [\App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('orders.updateStatus');
-    Route::get('orders/pending', [\App\Http\Controllers\Admin\OrderController::class, 'pending'])->name('orders.pending');
-    Route::get('orders/delivery', [\App\Http\Controllers\Admin\OrderController::class, 'delivery'])->name('orders.delivery');
-    Route::patch('orders/{order}/status', [\App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('orders.updateStatus');
     Route::patch('orders/{order}/delivery-status', [\App\Http\Controllers\Admin\OrderController::class, 'updateDeliveryStatus'])->name('orders.updateDeliveryStatus');
     Route::patch('orders/{order}/payment-status', [\App\Http\Controllers\Admin\OrderController::class, 'updatePaymentStatus'])->name('orders.updatePaymentStatus');
     Route::patch('orders/{order}/assign-delivery', [\App\Http\Controllers\Admin\OrderController::class, 'assignDelivery'])->name('orders.assignDelivery');
     Route::patch('orders/{order}/mark-delivered', [\App\Http\Controllers\Admin\OrderController::class, 'markAsDelivered'])->name('orders.markAsDelivered');
     Route::patch('orders/{order}/cancel', [\App\Http\Controllers\Admin\OrderController::class, 'cancel'])->name('orders.cancel');
     Route::get('orders/statistics', [\App\Http\Controllers\Admin\OrderController::class, 'statistics'])->name('orders.statistics');
+
+    // Bulk Actions for Orders
+    Route::post('orders/bulk/confirm', [\App\Http\Controllers\Admin\OrderController::class, 'bulkConfirm'])->name('orders.bulk.confirm');
+    Route::post('orders/bulk/processing', [\App\Http\Controllers\Admin\OrderController::class, 'bulkProcessing'])->name('orders.bulk.processing');
+    Route::post('orders/bulk/cancel', [\App\Http\Controllers\Admin\OrderController::class, 'bulkCancel'])->name('orders.bulk.cancel');
 
 
 

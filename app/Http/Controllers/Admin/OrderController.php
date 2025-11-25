@@ -459,4 +459,64 @@ class OrderController extends Controller
             'monthly_revenue' => $monthlyRevenue,
         ]);
     }
+
+    public function bulkConfirm(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:orders,id'
+        ]);
+
+        $count = Order::whereIn('id', $request->ids)
+            ->where('status', 'pending')
+            ->update([
+                'status' => 'confirmed',
+                'confirmed_at' => now()
+            ]);
+
+        return redirect()->route('admin.orders.index')
+            ->with('success', "{$count} orders confirmed successfully.");
+    }
+
+    /**
+     * Bulk mark orders as processing
+     */
+    public function bulkProcessing(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:orders,id'
+        ]);
+
+        $count = Order::whereIn('id', $request->ids)
+            ->where('status', 'confirmed')
+            ->update([
+                'status' => 'processing',
+                'prepared_at' => now()
+            ]);
+
+        return redirect()->route('admin.orders.index')
+            ->with('success', "{$count} orders marked as processing.");
+    }
+
+    /**
+     * Bulk cancel orders
+     */
+    public function bulkCancel(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:orders,id'
+        ]);
+
+        $count = Order::whereIn('id', $request->ids)
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->update([
+                'status' => 'cancelled',
+                'delivery_status' => 'failed'
+            ]);
+
+        return redirect()->route('admin.orders.index')
+            ->with('success', "{$count} orders cancelled successfully.");
+    }
 }

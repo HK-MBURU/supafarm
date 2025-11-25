@@ -89,7 +89,7 @@ class Order extends Model
      */
     public function getStatusBadgeClassAttribute()
     {
-        return match($this->status) {
+        return match ($this->status) {
             'pending' => 'badge-warning',
             'confirmed' => 'badge-info',
             'processing' => 'badge-primary',
@@ -105,7 +105,7 @@ class Order extends Model
      */
     public function getPaymentStatusBadgeClassAttribute()
     {
-        return match($this->payment_status) {
+        return match ($this->payment_status) {
             'pending' => 'badge-warning',
             'paid' => 'badge-success',
             'failed' => 'badge-danger',
@@ -119,7 +119,7 @@ class Order extends Model
      */
     public function getDeliveryStatusBadgeClassAttribute()
     {
-        return match($this->delivery_status) {
+        return match ($this->delivery_status) {
             'pending' => 'badge-secondary',
             'assigned' => 'badge-info',
             'picked_up' => 'badge-primary',
@@ -135,7 +135,7 @@ class Order extends Model
      */
     public function getDeliveryStatusTextAttribute()
     {
-        return match($this->delivery_status) {
+        return match ($this->delivery_status) {
             'pending' => 'Awaiting Assignment',
             'assigned' => 'Assigned to Rider',
             'picked_up' => 'Picked Up',
@@ -166,9 +166,9 @@ class Order extends Model
     public function getDeliveryAddressAttribute()
     {
         if (is_array($this->shipping_address)) {
-            return $this->shipping_address['full_address'] ?? 
-                   $this->shipping_address['address'] ?? 
-                   'Address not available';
+            return $this->shipping_address['full_address'] ??
+                $this->shipping_address['address'] ??
+                'Address not available';
         }
         return $this->shipping_address ?? 'Address not available';
     }
@@ -194,8 +194,8 @@ class Order extends Model
      */
     public function canBeCancelled()
     {
-        return in_array($this->status, ['pending', 'confirmed']) && 
-               in_array($this->delivery_status, ['pending', 'assigned']);
+        return in_array($this->status, ['pending', 'confirmed']) &&
+            in_array($this->delivery_status, ['pending', 'assigned']);
     }
 
     /**
@@ -222,7 +222,7 @@ class Order extends Model
      */
     public function getProgressPercentageAttribute()
     {
-        $statusProgress = match($this->status) {
+        $statusProgress = match ($this->status) {
             'pending' => 10,
             'confirmed' => 25,
             'processing' => 50,
@@ -232,7 +232,7 @@ class Order extends Model
             default => 0,
         };
 
-        $deliveryProgress = match($this->delivery_status) {
+        $deliveryProgress = match ($this->delivery_status) {
             'pending' => 0,
             'assigned' => 20,
             'picked_up' => 40,
@@ -311,7 +311,7 @@ class Order extends Model
      */
     public function getNextExpectedStatusAttribute()
     {
-        return match($this->delivery_status) {
+        return match ($this->delivery_status) {
             'pending' => 'assigned',
             'assigned' => 'picked_up',
             'picked_up' => 'in_transit',
@@ -320,5 +320,89 @@ class Order extends Model
             'failed' => 'assigned',
             default => 'pending',
         };
+    }
+
+    public function getCurrencySymbolAttribute()
+    {
+        return match (strtoupper($this->currency)) {
+            'USD' => '$',
+            'EUR' => '€',
+            'GBP' => '£',
+            'KES' => 'KSh',
+            'KSH' => 'KSh',
+            'CAD' => 'C$',
+            'AUD' => 'A$',
+            'JPY' => '¥',
+            'CNY' => '¥',
+            'INR' => '₹',
+            default => $this->currency . ' ', // Fallback: use currency code with space
+        };
+    }
+
+    /**
+     * Format amount with currency symbol
+     */
+    public function formatAmount($amount)
+    {
+        $symbol = $this->currency_symbol;
+        $formattedAmount = number_format($amount, 2);
+
+        // For currencies that typically go before the amount
+        $prefixCurrencies = ['USD', 'EUR', 'GBP', 'CAD', 'AUD', 'KES', 'KSH'];
+
+        if (in_array(strtoupper($this->currency), $prefixCurrencies)) {
+            return $symbol . $formattedAmount;
+        }
+
+        // For currencies that typically go after the amount
+        return $formattedAmount . ' ' . $symbol;
+    }
+
+    /**
+     * Get formatted subtotal
+     */
+    public function getFormattedSubtotalAttribute()
+    {
+        return $this->formatAmount($this->subtotal);
+    }
+
+    /**
+     * Get formatted shipping cost
+     */
+    public function getFormattedShippingCostAttribute()
+    {
+        return $this->formatAmount($this->shipping_cost);
+    }
+
+    /**
+     * Get formatted tax amount
+     */
+    public function getFormattedTaxAmountAttribute()
+    {
+        return $this->formatAmount($this->tax_amount);
+    }
+
+    /**
+     * Get formatted total amount
+     */
+    public function getFormattedTotalAmountAttribute()
+    {
+        return $this->formatAmount($this->total_amount);
+    }
+
+    /**
+     * Get default currency (for cases where order currency might be null)
+     */
+    public static function getDefaultCurrency()
+    {
+        return 'KES'; // Kenyan Shilling as default
+    }
+
+    /**
+     * Get default currency symbol
+     */
+    public static function getDefaultCurrencySymbol()
+    {
+        return 'KSh';
     }
 }

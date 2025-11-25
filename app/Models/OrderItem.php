@@ -60,7 +60,7 @@ class OrderItem extends Model
             if (empty($orderItem->total)) {
                 $orderItem->total = $orderItem->quantity * $orderItem->price;
             }
-            
+
             // Store product name for reference
             if (empty($orderItem->product_name) && $orderItem->product) {
                 $orderItem->product_name = $orderItem->product->name;
@@ -72,5 +72,21 @@ class OrderItem extends Model
                 $orderItem->total = $orderItem->quantity * $orderItem->price;
             }
         });
+    }
+
+    /**
+     * Get formatted price
+     */
+    public function getFormattedPriceAttribute()
+    {
+        return $this->order->formatAmount($this->price);
+    }
+
+    /**
+     * Get formatted subtotal
+     */
+    public function getFormattedSubtotalAttribute()
+    {
+        return $this->order->formatAmount($this->subtotal);
     }
 }

@@ -17,12 +17,19 @@
     <style>
         :root {
             --primary: #BC450D;
+            --primary-dark: #9a380a;
             --secondary: #E7B216;
             --accent: #358BA2;
-            --dark: #2D3748;
+            --dark: #1a202c;
+            --dark-light: #2D3748;
             --light: #F7FAFC;
             --gray: #718096;
             --border: #E2E8F0;
+            --sidebar-width: 260px;
+            --sidebar-collapsed: 70px;
+            --header-height: 70px;
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
 
         * {
@@ -36,6 +43,7 @@
             background-color: #f8f9fa;
             color: var(--dark);
             line-height: 1.6;
+            overflow-x: hidden;
         }
 
         /* Layout */
@@ -46,23 +54,41 @@
 
         /* Sidebar */
         .admin-sidebar {
-            width: 260px;
+            width: var(--sidebar-width);
             background: var(--dark);
             color: white;
             position: fixed;
             height: 100vh;
             overflow-y: auto;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: var(--shadow-lg);
         }
 
         .sidebar-header {
             padding: 20px;
             border-bottom: 1px solid #4A5568;
             background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: var(--header-height);
         }
 
         .sidebar-header h1 {
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .sidebar-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.25rem;
+            cursor: pointer;
         }
 
         .nav-section {
@@ -72,10 +98,13 @@
 
         .nav-section h3 {
             padding: 0 20px 10px;
-            font-size: 0.875rem;
+            font-size: 0.75rem;
             text-transform: uppercase;
             color: var(--secondary);
             font-weight: 500;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            overflow: hidden;
         }
 
         .nav-links {
@@ -88,8 +117,10 @@
             padding: 12px 20px;
             color: #CBD5E0;
             text-decoration: none;
-            transition: none;
+            transition: all 0.3s ease;
             border-left: 3px solid transparent;
+            white-space: nowrap;
+            overflow: hidden;
         }
 
         .nav-links a:hover {
@@ -108,12 +139,18 @@
             margin-right: 12px;
             width: 20px;
             text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .nav-text {
+            transition: opacity 0.3s ease;
         }
 
         /* Main Content */
         .admin-main {
             flex: 1;
-            margin-left: 260px;
+            margin-left: var(--sidebar-width);
+            transition: all 0.3s ease;
         }
 
         /* Header */
@@ -121,16 +158,30 @@
             background: white;
             border-bottom: 1px solid var(--border);
             padding: 0 30px;
-            height: 70px;
+            height: var(--header-height);
             display: flex;
             align-items: center;
             justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            box-shadow: var(--shadow);
+        }
+
+        .mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            color: var(--dark);
+            cursor: pointer;
         }
 
         .header-left h2 {
             font-size: 1.5rem;
             font-weight: 600;
             color: var(--dark);
+            margin: 0;
         }
 
         .header-right {
@@ -142,7 +193,15 @@
         .user-menu {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .user-menu:hover {
+            background: var(--light);
         }
 
         .user-avatar {
@@ -155,31 +214,57 @@
             align-items: center;
             justify-content: center;
             font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .user-role {
+            font-size: 0.875rem;
+            color: var(--gray);
         }
 
         /* Content Area */
         .admin-content {
             padding: 30px;
+            min-height: calc(100vh - var(--header-height));
         }
 
         /* Cards */
         .card {
             background: white;
             border: 1px solid var(--border);
-            border-radius: 0;
-            margin-bottom: 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
         }
 
         .card-header {
             padding: 20px;
             border-bottom: 1px solid var(--border);
             background: var(--light);
+            border-radius: 12px 12px 0 0 !important;
         }
 
         .card-header h3 {
             font-size: 1.25rem;
             font-weight: 600;
             color: var(--dark);
+            margin: 0;
         }
 
         .card-body {
@@ -203,6 +288,9 @@
             background: var(--light);
             font-weight: 600;
             color: var(--dark);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .table tr:hover {
@@ -221,18 +309,25 @@
             text-decoration: none;
             font-weight: 500;
             cursor: pointer;
-            transition: none;
-            border-radius: 0;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            font-size: 0.875rem;
         }
 
         .btn:hover {
-            opacity: 0.9;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
         }
 
         .btn-primary {
             background: var(--primary);
             border-color: var(--primary);
             color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            border-color: var(--primary-dark);
         }
 
         .btn-secondary {
@@ -249,7 +344,7 @@
 
         .btn-sm {
             padding: 8px 16px;
-            font-size: 0.875rem;
+            font-size: 0.75rem;
         }
 
         /* Forms */
@@ -262,41 +357,53 @@
             margin-bottom: 8px;
             font-weight: 500;
             color: var(--dark);
+            font-size: 0.875rem;
         }
 
         .form-control {
             width: 100%;
-            padding: 10px 12px;
+            padding: 12px 16px;
             border: 1px solid var(--border);
             background: white;
             font-size: 1rem;
-            border-radius: 0;
+            border-radius: 8px;
+            transition: all 0.3s ease;
         }
 
         .form-control:focus {
             outline: none;
             border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(53, 139, 162, 0.1);
         }
 
         /* Stats Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
+            gap: 24px;
             margin-bottom: 30px;
         }
 
         .stat-card {
             background: white;
             border: 1px solid var(--border);
-            padding: 20px;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
         }
 
         .stat-value {
             font-size: 2rem;
             font-weight: 700;
             color: var(--primary);
-            margin-bottom: 5px;
+            margin-bottom: 8px;
+            line-height: 1;
         }
 
         .stat-label {
@@ -304,16 +411,18 @@
             font-size: 0.875rem;
             text-transform: uppercase;
             font-weight: 500;
+            letter-spacing: 0.5px;
         }
 
         /* Status Badges */
         .badge {
             display: inline-block;
-            padding: 4px 12px;
+            padding: 6px 12px;
             font-size: 0.75rem;
             font-weight: 600;
             text-transform: uppercase;
-            border-radius: 0;
+            border-radius: 6px;
+            letter-spacing: 0.5px;
         }
 
         .badge-success {
@@ -341,95 +450,224 @@
             color: #2D3748;
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
+        /* Mobile Overlay */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
             .admin-sidebar {
-                width: 100%;
-                height: auto;
-                position: relative;
+                transform: translateX(-100%);
+            }
+
+            .admin-sidebar.mobile-open {
+                transform: translateX(0);
             }
 
             .admin-main {
                 margin-left: 0;
             }
 
+            .sidebar-overlay.mobile-open {
+                display: block;
+            }
+
+            .mobile-toggle {
+                display: block;
+            }
+
+            .sidebar-toggle {
+                display: block;
+            }
+
+            .admin-header {
+                padding: 0 20px;
+            }
+
+            .admin-content {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
             .stats-grid {
                 grid-template-columns: 1fr;
+                gap: 16px;
             }
+
+            .admin-content {
+                padding: 16px;
+            }
+
+            .card-body {
+                padding: 16px;
+            }
+
+            .header-right .user-info {
+                display: none;
+            }
+
+            .table-responsive {
+                font-size: 0.875rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .admin-header {
+                padding: 0 16px;
+            }
+
+            .header-left h2 {
+                font-size: 1.25rem;
+            }
+
+            .admin-content {
+                padding: 12px;
+            }
+
+            .btn {
+                padding: 8px 16px;
+                font-size: 0.75rem;
+            }
+        }
+
+        /* Sidebar collapsed state */
+        .sidebar-collapsed .admin-sidebar {
+            width: var(--sidebar-collapsed);
+        }
+
+        .sidebar-collapsed .admin-main {
+            margin-left: var(--sidebar-collapsed);
+        }
+
+        .sidebar-collapsed .nav-text,
+        .sidebar-collapsed .nav-section h3 {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .sidebar-collapsed .sidebar-header h1 {
+            opacity: 0;
+        }
+
+        /* Scrollbar Styling */
+        .admin-sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .admin-sidebar::-webkit-scrollbar-track {
+            background: #2D3748;
+        }
+
+        .admin-sidebar::-webkit-scrollbar-thumb {
+            background: #4A5568;
+            border-radius: 3px;
+        }
+
+        .admin-sidebar::-webkit-scrollbar-thumb:hover {
+            background: #718096;
         }
     </style>
 </head>
 
 <body>
-    <div class="admin-container">
+    <div class="admin-container" id="adminContainer">
+        <!-- Mobile Overlay -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
         <!-- Sidebar -->
-        <aside class="admin-sidebar">
+        <aside class="admin-sidebar" id="adminSidebar">
             <div class="sidebar-header">
                 <h1>SupaFarm Admin</h1>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
 
             <nav>
                 <div class="nav-section">
                     <h3>Dashboard</h3>
                     <ul class="nav-links">
-                        <li><a href="{{ route('admin.supafarm') }}"
-                                class="{{ request()->routeIs('admin.supafarm') ? 'active' : '' }}">
-                                📊 Overview
-                            </a></li>
+                        <li>
+                            <a href="{{ route('admin.supafarm') }}" class="{{ request()->routeIs('admin.supafarm') ? 'active' : '' }}">
+                                <i class="fas fa-chart-line"></i>
+                                <span class="nav-text">Overview</span>
+                            </a>
+                        </li>
                     </ul>
                 </div>
 
                 <div class="nav-section">
                     <h3>Products</h3>
                     <ul class="nav-links">
-                        <li><a href="{{ route('admin.categories.index') }}"
-                                class="{{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
-                                📁 Categories
-                            </a></li>
-                        <li><a href="{{ route('admin.products.index') }}"
-                                class="{{ request()->routeIs('admin.products.index') ? 'active' : '' }}">
-                                📦 All Products
-                            </a></li>
-
+                        <li>
+                            <a href="{{ route('admin.categories.index') }}" class="{{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+                                <i class="fas fa-folder"></i>
+                                <span class="nav-text">Categories</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.products.index') }}" class="{{ request()->routeIs('admin.products.index') ? 'active' : '' }}">
+                                <i class="fas fa-cube"></i>
+                                <span class="nav-text">All Products</span>
+                            </a>
+                        </li>
                     </ul>
                 </div>
 
                 <div class="nav-section">
                     <h3>Orders</h3>
                     <ul class="nav-links">
-                        <li><a href="{{ route('admin.orders.index') }}"
-                                class="{{ request()->routeIs('admin.orders.index') ? 'active' : '' }}">
-                                🛒 All Orders
-                            </a></li>
-
+                        <li>
+                            <a href="{{ route('admin.orders.index') }}" class="{{ request()->routeIs('admin.orders.index') ? 'active' : '' }}">
+                                <i class="fas fa-shopping-cart"></i>
+                                <span class="nav-text">All Orders</span>
+                            </a>
+                        </li>
                     </ul>
                 </div>
 
                 <div class="nav-section">
                     <h3>Content</h3>
                     <ul class="nav-links">
-                        <li><a href="{{ route('admin.about.index') }}"
-                                class="{{ request()->routeIs('admin.about*') ? 'active' : '' }}">
-                                👥 About Page
-                            </a></li>
-                        <li><a href="{{ route('admin.contacts.index') }}"
-                                class="{{ request()->routeIs('admin.contacts*') ? 'active' : '' }}">
-                                📞 Contacts
-                            </a></li>
+                        <li>
+                            <a href="{{ route('admin.about.index') }}" class="{{ request()->routeIs('admin.about*') ? 'active' : '' }}">
+                                <i class="fas fa-users"></i>
+                                <span class="nav-text">About Page</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.contacts.index') }}" class="{{ request()->routeIs('admin.contacts*') ? 'active' : '' }}">
+                                <i class="fas fa-phone"></i>
+                                <span class="nav-text">Contacts</span>
+                            </a>
+                        </li>
                     </ul>
                 </div>
 
                 <div class="nav-section">
                     <h3>Account</h3>
                     <ul class="nav-links">
-                        <li><a href="{{ route('admin.profile.edit') }}"
-                                class="{{ request()->routeIs('admin.profile*') ? 'active' : '' }}">
-                                👤 Profile
-                            </a></li>
-                        <li><a href="{{ route('logout') }}"
-                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                🚪 Logout
-                            </a></li>
+                        <li>
+                            <a href="{{ route('admin.profile.edit') }}" class="{{ request()->routeIs('admin.profile*') ? 'active' : '' }}">
+                                <i class="fas fa-user"></i>
+                                <span class="nav-text">Profile</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span class="nav-text">Logout</span>
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </nav>
@@ -440,6 +678,9 @@
             <!-- Header -->
             <header class="admin-header">
                 <div class="header-left">
+                    <button class="mobile-toggle" id="mobileToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
                     <h2>@yield('page-title', 'Dashboard')</h2>
                 </div>
                 <div class="header-right">
@@ -447,7 +688,10 @@
                         <div class="user-avatar">
                             {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                         </div>
-                        <span>{{ auth()->user()->name }}</span>
+                        <div class="user-info">
+                            <span class="user-name">{{ auth()->user()->name }}</span>
+                            <span class="user-role">Administrator</span>
+                        </div>
                     </div>
                 </div>
             </header>
@@ -466,8 +710,48 @@
 
     <!-- Scripts -->
     <script>
-        // Simple JavaScript for basic interactions
         document.addEventListener('DOMContentLoaded', function() {
+            const adminContainer = document.getElementById('adminContainer');
+            const adminSidebar = document.getElementById('adminSidebar');
+            const mobileToggle = document.getElementById('mobileToggle');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+            // Mobile sidebar toggle
+            function toggleMobileSidebar() {
+                adminSidebar.classList.toggle('mobile-open');
+                sidebarOverlay.classList.toggle('mobile-open');
+                document.body.style.overflow = adminSidebar.classList.contains('mobile-open') ? 'hidden' : '';
+            }
+
+            // Desktop sidebar collapse
+            function toggleSidebar() {
+                adminContainer.classList.toggle('sidebar-collapsed');
+                // Save state to localStorage
+                const isCollapsed = adminContainer.classList.contains('sidebar-collapsed');
+                localStorage.setItem('sidebarCollapsed', isCollapsed);
+            }
+
+            // Event listeners
+            mobileToggle.addEventListener('click', toggleMobileSidebar);
+            sidebarToggle.addEventListener('click', toggleMobileSidebar);
+            sidebarOverlay.addEventListener('click', toggleMobileSidebar);
+
+            // Close sidebar when clicking on a link (mobile)
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth <= 1024) {
+                        toggleMobileSidebar();
+                    }
+                });
+            });
+
+            // Load sidebar state from localStorage
+            const sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+            if (sidebarCollapsed) {
+                adminContainer.classList.add('sidebar-collapsed');
+            }
+
             // Add active class to current page links
             const currentPath = window.location.pathname;
             const navLinks = document.querySelectorAll('.nav-links a');
@@ -477,6 +761,22 @@
                     link.classList.add('active');
                 }
             });
+
+            // Handle window resize
+            function handleResize() {
+                if (window.innerWidth > 1024) {
+                    adminSidebar.classList.remove('mobile-open');
+                    sidebarOverlay.classList.remove('mobile-open');
+                    document.body.style.overflow = '';
+                }
+            }
+
+            window.addEventListener('resize', handleResize);
+
+            // Add smooth transitions after page load
+            setTimeout(() => {
+                document.body.style.transition = 'all 0.3s ease';
+            }, 100);
         });
     </script>
 
