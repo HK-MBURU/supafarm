@@ -149,9 +149,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin'], 'as' => 'a
     Route::patch('orders/{order}/cancel', [\App\Http\Controllers\Admin\OrderController::class, 'cancel'])->name('orders.cancel');
     Route::get('orders/statistics', [\App\Http\Controllers\Admin\OrderController::class, 'statistics'])->name('orders.statistics');
 
-    // Content Management
-    Route::get('contacts', [\App\Http\Controllers\Admin\ContentController::class, 'contacts'])->name('contacts');
-    Route::put('contacts', [\App\Http\Controllers\Admin\ContentController::class, 'updateContacts'])->name('contacts.update');
+
 
     // User Profile
     Route::get('profile', [\App\Http\Controllers\Admin\ProfileController::class, 'edit'])->name('profile.edit');
@@ -171,5 +169,23 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin'], 'as' => 'a
         Route::get('/export', [\App\Http\Controllers\Admin\AboutController::class, 'export'])->name('export');
         Route::post('/import', [\App\Http\Controllers\Admin\AboutController::class, 'import'])->name('import');
         Route::post('/upload-image', [\App\Http\Controllers\Admin\AboutController::class, 'uploadImage'])->name('uploadImage');
+    });
+
+    Route::prefix('contacts')->name('contacts.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\ContactController::class, 'index'])->name('index');
+        Route::get('/create', [\App\Http\Controllers\Admin\ContactController::class, 'create'])->name('create');
+        Route::post('/', [\App\Http\Controllers\Admin\ContactController::class, 'store'])->name('store');
+        Route::get('/{contact}', [\App\Http\Controllers\Admin\ContactController::class, 'show'])->name('show');
+        Route::get('/{contact}/edit', [\App\Http\Controllers\Admin\ContactController::class, 'edit'])->name('edit');
+        Route::put('/{contact}', [\App\Http\Controllers\Admin\ContactController::class, 'update'])->name('update');
+        Route::delete('/{contact}', [\App\Http\Controllers\Admin\ContactController::class, 'destroy'])->name('destroy');
+
+        // Bulk Actions
+        Route::post('/bulk-delete', [\App\Http\Controllers\Admin\ContactController::class, 'bulkDestroy'])->name('bulk.destroy');
+        Route::post('/mark-read', [\App\Http\Controllers\Admin\ContactController::class, 'markAsRead'])->name('mark.read');
+        Route::post('/mark-unread', [\App\Http\Controllers\Admin\ContactController::class, 'markAsUnread'])->name('mark.unread');
+
+        // Export
+        Route::get('/export', [\App\Http\Controllers\Admin\ContactController::class, 'export'])->name('export');
     });
 });

@@ -412,7 +412,7 @@
                                 class="{{ request()->routeIs('admin.about*') ? 'active' : '' }}">
                                 👥 About Page
                             </a></li>
-                        <li><a href="{{ route('admin.contacts') }}"
+                        <li><a href="{{ route('admin.contacts.index') }}"
                                 class="{{ request()->routeIs('admin.contacts*') ? 'active' : '' }}">
                                 📞 Contacts
                             </a></li>
