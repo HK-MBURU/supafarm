@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 
 class Product extends Model
 {
@@ -24,11 +25,19 @@ class Product extends Model
         'meta_title',
         'meta_description',
         'image',
+        'original_filename',
     ];
+
     protected $casts = [
         'image' => 'array',
         'original_filename' => 'array',
+        'price' => 'decimal:2',
+        'sale_price' => 'decimal:2',
+        'is_featured' => 'boolean',
+        'is_active' => 'boolean',
     ];
+
+    protected $appends = ['image_url', 'image_urls'];
 
     public function getImageUrlAttribute()
     {
@@ -36,17 +45,13 @@ class Product extends Model
             return null;
         }
 
-        // If image is a JSON string that got decoded to an array
         if (is_array($this->image)) {
-            // Return the first image in the array
             return asset('storage/' . $this->image[0]);
         }
 
-        // Regular string case
         return asset('storage/' . $this->image);
     }
 
-    // Add this method to get all images if needed
     public function getImageUrlsAttribute()
     {
         if (empty($this->image)) {
@@ -54,22 +59,37 @@ class Product extends Model
         }
 
         if (is_array($this->image)) {
-            // Map all images to their full URLs
             return array_map(function ($img) {
                 return asset('storage/' . $img);
             }, $this->image);
         }
 
-        // Single image case
         return [asset('storage/' . $this->image)];
+    }
+
+    public function getHasDiscountAttribute()
+    {
+        return !is_null($this->sale_price) && $this->sale_price < $this->price;
+    }
+
+    public function getDiscountPercentageAttribute()
+    {
+        if (!$this->has_discount) {
+            return 0;
+        }
+
+        return round((($this->price - $this->sale_price) / $this->price) * 100);
+    }
+
+    public function getDisplayPriceAttribute()
+    {
+        return $this->has_discount ? $this->sale_price : $this->price;
     }
 
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
     }
-
-
 
     public function reviews(): HasMany
     {
@@ -84,5 +104,30 @@ class Product extends Model
     public function cartItems(): HasMany
     {
         return $this->hasMany(CartItem::class);
+    }
+
+    // Scope for active products
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    // Scope for featured products
+    public function scopeFeatured($query)
+    {
+        return $query->where('is_featured', true);
+    }
+
+    // Scope for products in stock
+    public function scopeInStock($query)
+    {
+        return $query->where('stock', '>', 0);
+    }
+
+    // Scope for products on sale
+    public function scopeOnSale($query)
+    {
+        return $query->whereNotNull('sale_price')
+                    ->where('sale_price', '<', DB::raw('price'));
     }
 }

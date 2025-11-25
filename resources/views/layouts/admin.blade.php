@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,10 @@
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Add Bootstrap Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Add Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Styles -->
     <style>
@@ -311,11 +316,30 @@
             border-radius: 0;
         }
 
-        .badge-success { background: #C6F6D5; color: #22543D; }
-        .badge-warning { background: #FEFCBF; color: #744210; }
-        .badge-danger { background: #FED7D7; color: #822727; }
-        .badge-info { background: #BEE3F8; color: #1A365D; }
-        .badge-secondary { background: #E2E8F0; color: #2D3748; }
+        .badge-success {
+            background: #C6F6D5;
+            color: #22543D;
+        }
+
+        .badge-warning {
+            background: #FEFCBF;
+            color: #744210;
+        }
+
+        .badge-danger {
+            background: #FED7D7;
+            color: #822727;
+        }
+
+        .badge-info {
+            background: #BEE3F8;
+            color: #1A365D;
+        }
+
+        .badge-secondary {
+            background: #E2E8F0;
+            color: #2D3748;
+        }
 
         /* Responsive */
         @media (max-width: 768px) {
@@ -335,6 +359,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="admin-container">
         <!-- Sidebar -->
@@ -347,64 +372,64 @@
                 <div class="nav-section">
                     <h3>Dashboard</h3>
                     <ul class="nav-links">
-                        <li><a href="{{ route('admin.supafarm') }}" class="{{ request()->routeIs('admin.supafarm') ? 'active' : '' }}">
-                            📊 Overview
-                        </a></li>
+                        <li><a href="{{ route('admin.supafarm') }}"
+                                class="{{ request()->routeIs('admin.supafarm') ? 'active' : '' }}">
+                                📊 Overview
+                            </a></li>
                     </ul>
                 </div>
 
                 <div class="nav-section">
                     <h3>Products</h3>
                     <ul class="nav-links">
-                        <li><a href="#">
-                            📦 All Products
-                        </a></li>
-                        <li><a href="#">
-                            📁 Categories
-                        </a></li>
-                        <li><a href="#">
-                            ⭐ Featured
-                        </a></li>
+                        <li><a href="{{ route('admin.categories.index') }}"
+                                class="{{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+                                📁 Categories
+                            </a></li>
+                        <li><a href="{{ route('admin.products.index') }}"
+                                class="{{ request()->routeIs('admin.products.index') ? 'active' : '' }}">
+                                📦 All Products
+                            </a></li>
+
                     </ul>
                 </div>
 
                 <div class="nav-section">
                     <h3>Orders</h3>
                     <ul class="nav-links">
-                        <li><a href="#">
-                            🛒 All Orders
-                        </a></li>
-                        <li><a href="#">
-                            ⏳ Pending
-                        </a></li>
-                        <li><a href="#">
-                            🚚 Delivery
-                        </a></li>
+                        <li><a href="{{ route('admin.orders.index') }}"
+                                class="{{ request()->routeIs('admin.orders.index') ? 'active' : '' }}">
+                                🛒 All Orders
+                            </a></li>
+
                     </ul>
                 </div>
 
                 <div class="nav-section">
                     <h3>Content</h3>
                     <ul class="nav-links">
-                        <li><a href="#">
-                            👥 About Page
-                        </a></li>
-                        <li><a href="#">
-                            📞 Contacts
-                        </a></li>
+                        <li><a href="{{ route('admin.about.index') }}"
+                                class="{{ request()->routeIs('admin.about*') ? 'active' : '' }}">
+                                👥 About Page
+                            </a></li>
+                        <li><a href="{{ route('admin.contacts') }}"
+                                class="{{ request()->routeIs('admin.contacts*') ? 'active' : '' }}">
+                                📞 Contacts
+                            </a></li>
                     </ul>
                 </div>
 
                 <div class="nav-section">
                     <h3>Account</h3>
                     <ul class="nav-links">
-                        <li><a href="#">
-                            👤 Profile
-                        </a></li>
+                        <li><a href="{{ route('admin.profile.edit') }}"
+                                class="{{ request()->routeIs('admin.profile*') ? 'active' : '' }}">
+                                👤 Profile
+                            </a></li>
                         <li><a href="{{ route('logout') }}"
-                               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                            🚪 Logout
-                        </a></li>
+                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                🚪 Logout
+                            </a></li>
                     </ul>
                 </div>
             </nav>
@@ -457,4 +482,5 @@
 
     @stack('scripts')
 </body>
+
 </html>
