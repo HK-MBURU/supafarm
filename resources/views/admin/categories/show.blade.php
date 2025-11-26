@@ -115,7 +115,7 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="px-4">${{ number_format($product->price, 2) }}</td>
+                                    <td class="px-4">KSh{{ number_format($product->price, 2) }}</td>
                                     <td class="px-4">{{ $product->stock_quantity ?? 'N/A' }}</td>
                                     <td class="px-4">
                                         <span class="badge {{ $product->is_active ? 'bg-success' : 'bg-danger' }}">
