@@ -190,4 +190,14 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin'], 'as' => 'a
         // Export
         Route::get('/export', [\App\Http\Controllers\Admin\ContactController::class, 'export'])->name('export');
     });
+
+    // Media Routes
+   Route::resource('media', \App\Http\Controllers\Admin\MediaController::class)->parameters([
+        'media' => 'media' // This tells Laravel to use 'media' instead of 'medium'
+    ]);
+    Route::post('media/order', [\App\Http\Controllers\Admin\MediaController::class, 'updateOrder'])->name('media.updateOrder');
+    Route::patch('media/{media}/toggle-status', [\App\Http\Controllers\Admin\MediaController::class, 'toggleStatus'])->name('media.toggle-status');
+
+    // News Routes
+    Route::resource('news', \App\Http\Controllers\Admin\NewsController::class);
 });

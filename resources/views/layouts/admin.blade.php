@@ -576,6 +576,7 @@
             background: #718096;
         }
     </style>
+    @stack('styles')
 </head>
 
 <body>
@@ -597,7 +598,8 @@
                     <h3>Dashboard</h3>
                     <ul class="nav-links">
                         <li>
-                            <a href="{{ route('admin.supafarm') }}" class="{{ request()->routeIs('admin.supafarm') ? 'active' : '' }}">
+                            <a href="{{ route('admin.supafarm') }}"
+                                class="{{ request()->routeIs('admin.supafarm') ? 'active' : '' }}">
                                 <i class="fas fa-chart-line"></i>
                                 <span class="nav-text">Overview</span>
                             </a>
@@ -609,13 +611,15 @@
                     <h3>Products</h3>
                     <ul class="nav-links">
                         <li>
-                            <a href="{{ route('admin.categories.index') }}" class="{{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+                            <a href="{{ route('admin.categories.index') }}"
+                                class="{{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
                                 <i class="fas fa-folder"></i>
                                 <span class="nav-text">Categories</span>
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('admin.products.index') }}" class="{{ request()->routeIs('admin.products.index') ? 'active' : '' }}">
+                            <a href="{{ route('admin.products.index') }}"
+                                class="{{ request()->routeIs('admin.products.index') ? 'active' : '' }}">
                                 <i class="fas fa-cube"></i>
                                 <span class="nav-text">All Products</span>
                             </a>
@@ -627,9 +631,30 @@
                     <h3>Orders</h3>
                     <ul class="nav-links">
                         <li>
-                            <a href="{{ route('admin.orders.index') }}" class="{{ request()->routeIs('admin.orders.index') ? 'active' : '' }}">
+                            <a href="{{ route('admin.orders.index') }}"
+                                class="{{ request()->routeIs('admin.orders.index') ? 'active' : '' }}">
                                 <i class="fas fa-shopping-cart"></i>
                                 <span class="nav-text">All Orders</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <h3>Media</h3>
+                    <ul class="nav-links">
+                        <li>
+                            <a href="{{ route('admin.media.index') }}"
+                                class="{{ request()->routeIs('admin.media.index') ? 'active' : '' }}">
+                                <i class="fas fa-images"></i>
+                                <span class="nav-text">All Media</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.news.index') }}"
+                                class="{{ request()->routeIs('admin.news.index') ? 'active' : '' }}">
+                                <i class="fas fa-newspaper"></i>
+                                <span class="nav-text">News & Updates</span>
                             </a>
                         </li>
                     </ul>
@@ -639,13 +664,15 @@
                     <h3>Content</h3>
                     <ul class="nav-links">
                         <li>
-                            <a href="{{ route('admin.about.index') }}" class="{{ request()->routeIs('admin.about*') ? 'active' : '' }}">
+                            <a href="{{ route('admin.about.index') }}"
+                                class="{{ request()->routeIs('admin.about*') ? 'active' : '' }}">
                                 <i class="fas fa-users"></i>
                                 <span class="nav-text">About Page</span>
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('admin.contacts.index') }}" class="{{ request()->routeIs('admin.contacts*') ? 'active' : '' }}">
+                            <a href="{{ route('admin.contacts.index') }}"
+                                class="{{ request()->routeIs('admin.contacts*') ? 'active' : '' }}">
                                 <i class="fas fa-phone"></i>
                                 <span class="nav-text">Contacts</span>
                             </a>
@@ -657,13 +684,15 @@
                     <h3>Account</h3>
                     <ul class="nav-links">
                         <li>
-                            <a href="{{ route('admin.profile.edit') }}" class="{{ request()->routeIs('admin.profile*') ? 'active' : '' }}">
+                            <a href="{{ route('admin.profile.edit') }}"
+                                class="{{ request()->routeIs('admin.profile*') ? 'active' : '' }}">
                                 <i class="fas fa-user"></i>
                                 <span class="nav-text">Profile</span>
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                            <a href="{{ route('logout') }}"
+                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                 <i class="fas fa-sign-out-alt"></i>
                                 <span class="nav-text">Logout</span>
                             </a>
