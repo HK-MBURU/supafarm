@@ -37,7 +37,15 @@ class Product extends Model
         'is_active' => 'boolean',
     ];
 
-    protected $appends = ['image_url', 'image_urls'];
+    protected $appends = [
+        'image_url', 
+        'image_urls', 
+        'formatted_price', 
+        'formatted_sale_price',
+        'has_discount',
+        'discount_percentage',
+        'display_price'
+    ];
 
     public function getImageUrlAttribute()
     {
@@ -84,6 +92,41 @@ class Product extends Model
     public function getDisplayPriceAttribute()
     {
         return $this->has_discount ? $this->sale_price : $this->price;
+    }
+
+    /**
+     * Format price in KSh with proper thousands separator
+     */
+    public function getFormattedPriceAttribute()
+    {
+        return 'KSh ' . number_format($this->price, 2);
+    }
+
+    /**
+     * Format sale price in KSh with proper thousands separator
+     */
+    public function getFormattedSalePriceAttribute()
+    {
+        if (is_null($this->sale_price)) {
+            return null;
+        }
+        return 'KSh ' . number_format($this->sale_price, 2);
+    }
+
+    /**
+     * Format display price (sale price if available, otherwise regular price)
+     */
+    public function getFormattedDisplayPriceAttribute()
+    {
+        return 'KSh ' . number_format($this->display_price, 2);
+    }
+
+    /**
+     * Static helper method to format any amount in KSh
+     */
+    public static function formatPrice($amount)
+    {
+        return 'KSh ' . number_format($amount, 2);
     }
 
     public function category(): BelongsTo

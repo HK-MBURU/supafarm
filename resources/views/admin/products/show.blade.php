@@ -173,7 +173,7 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <strong class="text-muted d-block">Regular Price</strong>
-                                <span class="h5">${{ number_format($product->price, 2) }}</span>
+                                <span class="h5">KSh{{ number_format($product->price, 2) }}</span>
                             </div>
                         </div>
                         <div class="col-md-6">
