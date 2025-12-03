@@ -10,7 +10,9 @@ use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\NewsController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
@@ -115,6 +117,17 @@ Route::group(['prefix' => 'checkout'], function () {
 
 Route::get('/contact', [ContactController::class, 'showForm'])->name('contact');
 Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
+
+// News routes
+Route::get('/news', [NewsController::class, 'index'])->name('news.index');
+Route::get('/news/{slug}', [NewsController::class, 'show'])->name('news.show');
+
+// Gallery routes
+Route::get('/gallery', [GalleryController::class, 'index'])->name('gallery.index');
+Route::get('/gallery/all', [GalleryController::class, 'getAllMedia'])->name('gallery.all');
+Route::get('/gallery/{id}', [GalleryController::class, 'show'])->name('gallery.show');
+
+
 
 
 // admin routes

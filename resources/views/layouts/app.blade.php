@@ -80,6 +80,8 @@
     <link rel="mask-icon" href="{{ asset('images/favicons/safari-pinned-tab.svg') }}" color="#bc450d">
     <link rel="shortcut icon" href="{{ asset('images/favicons/favicon.ico') }}">
 
+    
+
     <!-- Additional App Icons -->
     <link rel="icon" type="image/svg+xml" href="{{ asset('images/logo/logo.svg') }}">
     <meta name="msapplication-TileColor" content="#bc450d">

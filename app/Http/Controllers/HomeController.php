@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
-    public function index()
+     public function index()
     {
         $categories = Category::where('is_active', 1)->get();
 
@@ -19,6 +19,8 @@ class HomeController extends Controller
 
         return view('home', compact('categories', 'about'));
     }
+
+
 
     public function products()
     {

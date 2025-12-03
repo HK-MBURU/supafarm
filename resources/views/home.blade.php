@@ -12,6 +12,9 @@
 
     @include('partials.product_categories')
     @include('partials.popular-products')
+    @include('partials.latest-news')
+
+    @include('partials.gallery-scroll')
 
     @include('partials.about')
     @include('partials.seo')
