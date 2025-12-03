@@ -209,7 +209,7 @@
         </a>
     </nav>
 
-    @include('partials.seo')
+
     @include('partials.footer')
 
     <!-- jQuery -->

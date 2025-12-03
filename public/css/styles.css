@@ -46,7 +46,6 @@ ul {
 /* Header Styles */
 .main-header {
     background-color: var(--light-color);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     position: sticky;
     top: 0;
     z-index: 100;
@@ -235,7 +234,7 @@ ul {
         color: white;
         display: block;
         padding: 15px 20px;
-        transition: background-color 0.3s;
+
     }
 
     .desktop-nav a:hover {
@@ -252,8 +251,6 @@ ul {
     height: 100vh;
     background-color: var(--light-color);
     z-index: 1000;
-    transition: left 0.3s ease;
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
     overflow-y: auto;
 }
 
@@ -291,7 +288,6 @@ ul {
     display: flex;
     justify-content: space-around;
     align-items: center;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
     z-index: 99;
 }
 
@@ -402,7 +398,7 @@ main {
     color: white;
     padding: 12px 25px;
     border-radius: 4px;
-    transition: background-color 0.3s;
+
 }
 
 .btn-primary:hover {
@@ -415,12 +411,11 @@ main {
     font-weight: bold;
     padding: 15px 30px;
     font-size: 1.1rem;
-    transition: all 0.3s ease;
     border: 2px solid transparent;
 }
 
 .hero-content .btn-primary:hover {
-    background-color: transparent;
+
     border: 2px solid var(--secondary-color);
     color: var(--secondary-color);
 }
@@ -431,7 +426,7 @@ main {
     color: white;
     padding: 8px 15px;
     border-radius: 4px;
-    transition: background-color 0.3s;
+
 }
 
 .btn-secondary:hover {
@@ -463,9 +458,8 @@ main {
 
 .product-card {
     background-color: white;
-    border-radius: 8px;
+    /* border-radius: 8px; */
     overflow: hidden;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s;
 }
 
@@ -551,7 +545,7 @@ footer {
     background-color: white;
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+
 }
 
 .category-card img {
@@ -591,7 +585,7 @@ footer {
     background-color: white;
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+
 }
 
 .product-item img {
@@ -615,6 +609,13 @@ footer {
     font-weight: bold;
     font-size: 1.2rem;
     margin-bottom: 15px;
+}
+
+/* Add borders for visual separation */
+.product-card,
+.category-card,
+.product-item {
+    border: 1px solid #e0e0e0;
 }
 
 /* ==========================================

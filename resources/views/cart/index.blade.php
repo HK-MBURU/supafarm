@@ -5,24 +5,24 @@
     <div class="breadcrumbs">
         <a href="/">Home</a> &gt; <span>Shopping Cart</span>
     </div>
-    
-    <h1 class="cart-title">Your Shopping Cart</h1>
-    
+
+
+
     <!-- Success/Error Messages -->
     <div id="cart-messages" class="cart-messages"></div>
-    
+
     @if(session('success'))
     <div class="alert alert-success">
         {{ session('success') }}
     </div>
     @endif
-    
+
     @if(session('error'))
     <div class="alert alert-error">
         {{ session('error') }}
     </div>
     @endif
-    
+
     <!-- Loading Overlay -->
     <div id="loading-overlay" class="loading-overlay" style="display: none;">
         <div class="loading-spinner">
@@ -30,13 +30,11 @@
             <p>Updating cart...</p>
         </div>
     </div>
-    
+
     <div id="cart-content">
         @if($cartItems->count() > 0)
-            <div class="cart-summary">
-                <p>You have <span id="cart-item-count">{{ $cartItems->count() }}</span> {{ Str::plural('item', $cartItems->count()) }} in your cart with a total of KSh <span id="cart-total-display">{{ number_format($total, 2) }}</span>.</p>
-            </div>
-            
+
+
             <div class="cart-items" id="cart-items-container">
                 <div class="cart-header">
                     <div class="product-col">Product</div>
@@ -45,7 +43,7 @@
                     <div class="total-col">Total</div>
                     <div class="action-col">Action</div>
                 </div>
-                
+
                 @foreach($cartItems as $item)
                 <div class="cart-item" data-item-id="{{ $item->id }}">
                     <div class="product-col">
@@ -58,28 +56,28 @@
                             <div class="product-details">
                                 <h3>{{ $item->product->name }}</h3>
                                 <p class="category">{{ $item->product->category->name ?? 'Uncategorized' }}</p>
-                                
+
                                 @if(($item->product->stock ?? 0) <= 5 && ($item->product->stock ?? 0) > 0)
                                 <p class="stock-warning">Only {{ $item->product->stock }} left</p>
                                 @endif
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="price-col">
                         <span class="price">KSh {{ number_format($item->price, 2) }}</span>
                     </div>
-                    
+
                     <div class="quantity-col">
                         <div class="quantity-form">
                             <div class="quantity-selector">
                                 <button type="button" class="qty-btn minus" data-item-id="{{ $item->id }}">
                                     <i class="fas fa-minus"></i>
                                 </button>
-                                <input type="number" 
-                                       class="qty-input" 
-                                       value="{{ $item->quantity }}" 
-                                       min="1" 
+                                <input type="number"
+                                       class="qty-input"
+                                       value="{{ $item->quantity }}"
+                                       min="1"
                                        max="{{ $item->product->stock ?? 10 }}"
                                        data-item-id="{{ $item->id }}"
                                        data-original-value="{{ $item->quantity }}">
@@ -88,7 +86,7 @@
                                 </button>
                             </div>
                         </div>
-                        
+
                         <!-- Fallback form for non-JS users -->
                         <form action="{{ route('cart.update', $item->id) }}" method="POST" class="fallback-form" style="display: none;">
                             @csrf
@@ -97,16 +95,16 @@
                             <button type="submit" class="update-btn">Update</button>
                         </form>
                     </div>
-                    
+
                     <div class="total-col">
                         <span class="item-total" data-item-id="{{ $item->id }}">KSh {{ number_format($item->total_price, 2) }}</span>
                     </div>
-                    
+
                     <div class="action-col">
                         <button type="button" class="remove-btn" data-item-id="{{ $item->id }}" data-product-name="{{ $item->product->name }}">
                             <i class="fas fa-trash"></i>
                         </button>
-                        
+
                         <!-- Fallback form for non-JS users -->
                         <form action="{{ route('cart.remove', $item->id) }}" method="POST" class="fallback-form" style="display: none;" onsubmit="return confirm('Are you sure you want to remove this item?');">
                             @csrf
@@ -117,38 +115,38 @@
                 </div>
                 @endforeach
             </div>
-            
+
             <div class="cart-actions">
                 <div class="continue-shopping">
                     <a href="/" class="btn-secondary"><i class="fas fa-arrow-left"></i> Continue Shopping</a>
                 </div>
-                
+
                 <div class="cart-totals">
                     <div class="totals-row subtotal">
                         <span>Subtotal:</span>
                         <span>KSh <span id="cart-subtotal">{{ number_format($total, 2) }}</span></span>
                     </div>
-                    
+
                     <div class="totals-row shipping">
                         <span>Shipping:</span>
                         <span>Calculated at checkout</span>
                     </div>
-                    
+
                     <div class="totals-row total">
                         <span>Total:</span>
                         <span>KSh <span id="cart-final-total">{{ number_format($total, 2) }}</span></span>
                     </div>
-                    
+
                     <div class="checkout-actions">
                         <button type="button" id="clear-cart-btn" class="clear-cart-btn">Clear Cart</button>
-                        
+
                         <!-- Fallback form for non-JS users -->
                         <form action="{{ route('cart.clear') }}" method="POST" class="fallback-form" style="display: none;" onsubmit="return confirm('Are you sure you want to clear your cart?');">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="clear-cart-btn">Clear Cart</button>
                         </form>
-                        
+
                         <a href="{{ route('cart.checkout') }}" class="checkout-btn">
                             <i class="fas fa-lock"></i> Proceed to Checkout
                         </a>
@@ -164,10 +162,8 @@
             </div>
         @endif
     </div>
-    
-    <div class="cart-meta">
-        <p>Last updated by: {{ $loginUser }} at {{ $timestamp }}</p>
-    </div>
+
+  
 </div>
 @endsection
 
@@ -346,8 +342,8 @@
     justify-content: space-between;
 }
 
-.price-col::before, 
-.quantity-col::before, 
+.price-col::before,
+.quantity-col::before,
 .total-col::before {
     content: attr(data-label);
     font-weight: bold;
@@ -661,46 +657,46 @@
         font-weight: bold;
         margin-bottom: 15px;
     }
-    
+
     .cart-item {
         grid-template-columns: 3fr 1fr 2fr 1fr 1fr;
         padding: 20px;
         align-items: center;
     }
-    
-    .price-col::before, 
-    .quantity-col::before, 
+
+    .price-col::before,
+    .quantity-col::before,
     .total-col::before {
         content: none;
     }
-    
+
     .price-col, .quantity-col, .total-col, .action-col {
         justify-content: center;
     }
-    
+
     .product-col {
         justify-self: start;
     }
-    
+
     .cart-actions {
         flex-direction: row;
         justify-content: space-between;
         align-items: flex-start;
     }
-    
+
     .cart-totals {
         width: 350px;
     }
-    
+
     .checkout-actions {
         flex-direction: row;
         gap: 15px;
     }
-    
+
     .clear-cart-btn {
         flex: 1;
     }
-    
+
     .checkout-btn {
         flex: 2;
     }
@@ -711,39 +707,39 @@
     .price-col::before {
         content: "Price: ";
     }
-    
+
     .quantity-col::before {
         content: "Qty: ";
     }
-    
+
     .total-col::before {
         content: "Total: ";
     }
-    
+
     .cart-item {
         padding: 15px;
     }
-    
+
     .product-info {
         flex-direction: column;
         text-align: center;
         gap: 10px;
     }
-    
+
     .product-details {
         text-align: left;
     }
-    
+
     .quantity-form {
         width: 100%;
         justify-content: space-between;
     }
-    
+
     .quantity-selector {
         flex: 1;
         max-width: 120px;
     }
-    
+
     .checkout-actions {
         gap: 15px;
     }
@@ -773,7 +769,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     // CSRF token for AJAX requests
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-    
+
     if (!csrfToken) {
         console.error('CSRF token not found. Make sure to include it in your layout.');
         return;
@@ -786,7 +782,7 @@ document.addEventListener('DOMContentLoaded', function() {
         messageElement.className = `alert alert-${type}`;
         messageElement.textContent = message;
         messagesContainer.appendChild(messageElement);
-        
+
         // Auto-hide after 5 seconds
         setTimeout(() => {
             messageElement.style.opacity = '0';
@@ -815,7 +811,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function toggleEmptyCart(isEmpty) {
         const cartContent = document.getElementById('cart-content');
         const cartItemsContainer = document.getElementById('cart-items-container');
-        
+
         if (isEmpty) {
             cartContent.innerHTML = `
                 <div class="empty-cart" id="empty-cart">
@@ -881,20 +877,20 @@ document.addEventListener('DOMContentLoaded', function() {
             function(data) {
                 // Update item total
                 itemTotal.textContent = `KSh ${data.item_total}`;
-                
+
                 // Update cart totals
                 updateTotals(data.cart_total);
-                
+
                 // Update cart count
                 updateCartCount(data.cart_count);
-                
+
                 // Update quantity input
                 qtyInput.value = data.quantity;
                 qtyInput.setAttribute('data-original-value', data.quantity);
-                
+
                 // Show success message
                 showMessage(data.message, 'success');
-                
+
                 // Re-enable buttons and remove loading state
                 minusBtn.disabled = false;
                 plusBtn.disabled = false;
@@ -907,10 +903,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Revert quantity to original value
                 const originalValue = qtyInput.getAttribute('data-original-value');
                 qtyInput.value = originalValue;
-                
+
                 // Show error message
                 showMessage(errorMessage, 'error');
-                
+
                 // Re-enable buttons and remove loading state
                 minusBtn.disabled = false;
                 plusBtn.disabled = false;
@@ -930,19 +926,19 @@ document.addEventListener('DOMContentLoaded', function() {
             const input = button.nextElementSibling;
             const currentValue = parseInt(input.value);
             const minValue = parseInt(input.min);
-            
+
             if (currentValue > minValue && !button.disabled) {
                 updateQuantity(itemId, currentValue - 1);
             }
         }
-        
+
         if (e.target.closest('.qty-btn.plus')) {
             const button = e.target.closest('.qty-btn.plus');
             const itemId = button.getAttribute('data-item-id');
             const input = button.previousElementSibling;
             const currentValue = parseInt(input.value);
             const maxValue = parseInt(input.max);
-            
+
             if (currentValue < maxValue && !button.disabled) {
                 updateQuantity(itemId, currentValue + 1);
             }
@@ -958,7 +954,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const minValue = parseInt(input.min);
             const maxValue = parseInt(input.max);
             const originalValue = parseInt(input.getAttribute('data-original-value'));
-            
+
             if (newValue !== originalValue && newValue >= minValue && newValue <= maxValue) {
                 updateQuantity(itemId, newValue);
             } else if (newValue < minValue || newValue > maxValue) {
@@ -972,7 +968,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function removeItem(itemId, productName) {
         const cartItem = document.querySelector(`[data-item-id="${itemId}"]`);
         const removeBtn = cartItem.querySelector('.remove-btn');
-        
+
         // Add loading state
         removeBtn.disabled = true;
         removeBtn.classList.add('loading');
@@ -985,19 +981,19 @@ document.addEventListener('DOMContentLoaded', function() {
             function(data) {
                 // Show success message
                 showMessage(data.message, 'success');
-                
+
                 // Update cart count
                 updateCartCount(data.cart_count);
-                
+
                 // Animate item removal
                 cartItem.classList.add('removing');
-                
+
                 setTimeout(() => {
                     cartItem.remove();
-                    
+
                     // Update totals
                     updateTotals(data.cart_total);
-                    
+
                     // Check if cart is empty
                     if (data.cart_empty) {
                         toggleEmptyCart(true);
@@ -1013,7 +1009,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 removeBtn.disabled = false;
                 removeBtn.classList.remove('loading');
                 cartItem.classList.remove('updating');
-                
+
                 // Show error message
                 showMessage(errorMessage, 'error');
             }
@@ -1026,7 +1022,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const button = e.target.closest('.remove-btn');
             const itemId = button.getAttribute('data-item-id');
             const productName = button.getAttribute('data-product-name');
-            
+
             if (confirm(`Are you sure you want to remove "${productName}" from your cart?`)) {
                 removeItem(itemId, productName);
             }
@@ -1036,7 +1032,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Clear cart function
     function clearCart() {
         const clearBtn = document.getElementById('clear-cart-btn');
-        
+
         // Add loading state
         clearBtn.disabled = true;
         clearBtn.classList.add('loading');
@@ -1048,10 +1044,10 @@ document.addEventListener('DOMContentLoaded', function() {
             function(data) {
                 // Show success message
                 showMessage(data.message, 'success');
-                
+
                 // Update cart count
                 updateCartCount(0);
-                
+
                 // Show empty cart state
                 toggleEmptyCart(true);
             },
@@ -1059,7 +1055,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Remove loading state
                 clearBtn.disabled = false;
                 clearBtn.classList.remove('loading');
-                
+
                 // Show error message
                 showMessage(errorMessage, 'error');
             }

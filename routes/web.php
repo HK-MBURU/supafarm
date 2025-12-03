@@ -23,7 +23,7 @@ Auth::routes();
 
 Route::get('/', [HomeController::class, 'index']);
 
-Route::get('/products', [ProductController::class, 'index']);
+Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::get('/products/view/{id}', [ProductController::class, 'view'])->name('products.view');
 
 Route::get('/products/{category}', [ProductController::class, 'show'])->name('products.category');
