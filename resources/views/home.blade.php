@@ -71,7 +71,7 @@
             font-size: 1.5rem;
         }
 
-        /* Back to Top Button */
+        /* Back to Top Button - DESKTOP ONLY */
         .back-to-top {
             position: fixed;
             bottom: 30px;
@@ -89,7 +89,8 @@
             visibility: hidden;
             transition: all 0.3s ease;
             z-index: 1000;
-            display: flex;
+            display: none;
+            /* Hide by default on mobile */
             align-items: center;
             justify-content: center;
         }
@@ -109,14 +110,33 @@
             transform: translateY(-1px);
         }
 
-        /* Mobile responsive */
-        @media (max-width: 768px) {
+        /* Show back-to-top button only on tablets and desktops */
+        @media (min-width: 768px) {
             .back-to-top {
-                width: 45px;
-                height: 45px;
-                bottom: 20px;
-                right: 20px;
-                font-size: 1rem;
+                display: flex;
+                /* Show on tablet and above */
+            }
+        }
+
+        /* Tablet specific adjustments */
+        @media (min-width: 768px) and (max-width: 1023px) {
+            .back-to-top {
+                width: 48px;
+                height: 48px;
+                bottom: 25px;
+                right: 25px;
+                font-size: 1.1rem;
+            }
+        }
+
+        /* Desktop specific adjustments */
+        @media (min-width: 1024px) {
+            .back-to-top {
+                width: 50px;
+                height: 50px;
+                bottom: 30px;
+                right: 30px;
+                font-size: 1.2rem;
             }
         }
 
@@ -129,6 +149,28 @@
         .lazy-section.loaded {
             min-height: auto;
         }
+
+        /* Loading error state */
+        .loading-error {
+            color: #f44336;
+            font-size: 1rem;
+            font-weight: 500;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 20px;
+        }
+
+        .loading-error i {
+            font-size: 2rem;
+        }
+
+        .loading-error a {
+            color: var(--primary-color);
+            text-decoration: underline;
+            cursor: pointer;
+        }
     </style>
 
     <script>
@@ -139,11 +181,11 @@
 
             const lazySections = document.querySelectorAll('.lazy-section');
             const sectionRoutes = {
-                'popular-products': '{{ route("home.section", "popular-products") }}',
-                'latest-news': '{{ route("home.section", "latest-news") }}',
-                'gallery-scroll': '{{ route("home.section", "gallery-scroll") }}',
-                'about': '{{ route("home.section", "about") }}',
-                'seo': '{{ route("home.section", "seo") }}'
+                'popular-products': '{{ route('home.section', 'popular-products') }}',
+                'latest-news': '{{ route('home.section', 'latest-news') }}',
+                'gallery-scroll': '{{ route('home.section', 'gallery-scroll') }}',
+                'about': '{{ route('home.section', 'about') }}',
+                'seo': '{{ route('home.section', 'seo') }}'
             };
 
             // Intersection Observer for lazy loading
@@ -177,32 +219,32 @@
                 sectionElement.classList.add('loading');
 
                 fetch(route, {
-                    method: 'GET',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                })
-                .then(response => {
-                    if (!response.ok) throw new Error('Network response was not ok');
-                    return response.text();
-                })
-                .then(html => {
-                    sectionElement.innerHTML = html;
-                    sectionElement.classList.add('loaded');
-                    sectionElement.classList.remove('loading');
+                        method: 'GET',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        return response.text();
+                    })
+                    .then(html => {
+                        sectionElement.innerHTML = html;
+                        sectionElement.classList.add('loaded');
+                        sectionElement.classList.remove('loading');
 
-                    // Re-initialize any scripts in the loaded section
-                    initializeSectionScripts(sectionElement);
-                })
-                .catch(error => {
-                    console.error('Error loading section:', error);
-                    sectionElement.innerHTML = `
+                        // Re-initialize any scripts in the loaded section
+                        initializeSectionScripts(sectionElement);
+                    })
+                    .catch(error => {
+                        console.error('Error loading section:', error);
+                        sectionElement.innerHTML = `
                         <div class="loading-error">
                             <i class="fas fa-exclamation-triangle"></i>
                             <p>Failed to load content. <a href="#" onclick="location.reload()">Reload page</a></p>
                         </div>
                     `;
-                });
+                    });
             }
 
             // Re-initialize scripts for dynamically loaded sections
@@ -282,7 +324,7 @@
             const preloadLink = document.createElement('link');
             preloadLink.rel = 'preload';
             preloadLink.as = 'image';
-            preloadLink.href = '{{ asset("images/hero-bg.jpg") }}'; // Adjust to your hero image
+            preloadLink.href = '{{ asset('images/hero-bg.jpg') }}'; // Adjust to your hero image
             document.head.appendChild(preloadLink);
 
             // Defer non-critical CSS
