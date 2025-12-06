@@ -38,7 +38,8 @@
                         </div>
 
                         <div class="product-actions">
-                            <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form" data-product-id="{{ $product->id }}">
+                            <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form"
+                                data-product-id="{{ $product->id }}">
                                 @csrf
                                 <input type="hidden" name="product_id" value="{{ $product->id }}">
                                 <input type="hidden" name="quantity" value="1">
@@ -429,158 +430,159 @@
 </style>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Select all add-to-cart forms
-        const addToCartForms = document.querySelectorAll('.add-to-cart-form');
+    (function() {
+        'use strict';
 
-        addToCartForms.forEach(form => {
-            form.addEventListener('submit', function(e) {
-                e.preventDefault(); // Prevent default form submission
+        // Wait for DOM to be fully loaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeCart);
+        } else {
+            initializeCart();
+        }
 
-                const form = this;
-                const submitButton = form.querySelector('.btn-cart');
-                const originalButtonText = submitButton.innerHTML;
-                const productId = form.dataset.productId;
+        function initializeCart() {
+            // Select all add-to-cart forms
+            const addToCartForms = document.querySelectorAll('.add-to-cart-form');
 
-                // Show loading state
-                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...';
-                submitButton.disabled = true;
+            if (addToCartForms.length === 0) {
+                console.warn('No cart forms found');
+                return;
+            }
 
-                // Get form data
-                const formData = new FormData(form);
+            addToCartForms.forEach(form => {
+                // Remove any existing listeners
+                const newForm = form.cloneNode(true);
+                form.parentNode.replaceChild(newForm, form);
 
-                // Send AJAX request
-                fetch(form.action, {
-                        method: 'POST',
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        body: formData
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            // Show success message with a toast/notification
-                            showCartNotification(data.message, 'success');
-
-                            // Update cart count in the header/navigation if it exists
-                            updateCartCount(data.cartCount);
-
-                            // Optionally update the button state
-                            setTimeout(() => {
-                                submitButton.innerHTML =
-                                    '<i class="fas fa-check"></i> Added';
-                                submitButton.style.backgroundColor =
-                                '#2e7d32'; // Green color for success
-
-                                // Revert button after 2 seconds
-                                setTimeout(() => {
-                                    submitButton.innerHTML =
-                                        originalButtonText;
-                                    submitButton.style.backgroundColor = '';
-                                    submitButton.disabled = false;
-                                }, 2000);
-                            }, 500);
-
-                        } else {
-                            // Show error message
-                            showCartNotification(data.message, 'error');
-
-                            // Revert button
-                            submitButton.innerHTML = originalButtonText;
-                            submitButton.disabled = false;
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        showCartNotification('Something went wrong. Please try again.',
-                            'error');
-
-                        // Revert button
-                        submitButton.innerHTML = originalButtonText;
-                        submitButton.disabled = false;
-                    });
+                newForm.addEventListener('submit', handleCartSubmit, false);
             });
-        });
 
-        // Function to show notification
-        function showCartNotification(message, type = 'success') {
-            // Check if notification container exists, create if not
-            let notificationContainer = document.getElementById('cart-notification-container');
-
-            if (!notificationContainer) {
-                notificationContainer = document.createElement('div');
-                notificationContainer.id = 'cart-notification-container';
-                notificationContainer.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                z-index: 9999;
-                display: flex;
-                flex-direction: column;
-                gap: 10px;
-                max-width: 350px;
-            `;
-                document.body.appendChild(notificationContainer);
-            }
-
-            // Create notification element
-            const notification = document.createElement('div');
-            notification.className = `cart-notification ${type}`;
-            notification.innerHTML = `
-            <div style="padding: 12px 16px; border-radius: 4px; background: ${type === 'success' ? '#4caf50' : '#f44336'}; color: white; font-size: 0.9rem; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
-                <strong>${type === 'success' ? '✓ Success!' : '✗ Error!'}</strong> ${message}
-            </div>
-        `;
-
-            notificationContainer.appendChild(notification);
-
-            // Auto-remove after 3 seconds
-            setTimeout(() => {
-                notification.style.opacity = '0';
-                notification.style.transition = 'opacity 0.3s';
-                setTimeout(() => {
-                    if (notification.parentNode) {
-                        notification.parentNode.removeChild(notification);
-                    }
-                }, 300);
-            }, 3000);
+            // Load initial cart count
+            loadCartCount();
         }
 
-        // Function to update cart count in the header
-        function updateCartCount(count) {
-            // Update cart count in desktop header if it exists
-            const desktopCartCount = document.querySelector('.desktop-cart .cart-count');
-            if (desktopCartCount) {
-                desktopCartCount.textContent = count;
-            }
+        function handleCartSubmit(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
 
-            // Update cart count in mobile navigation if it exists
-            const mobileCartCount = document.querySelector('.mobile-bottom-nav .cart-count');
-            if (mobileCartCount) {
-                mobileCartCount.textContent = count;
-            }
+            const form = e.target;
+            const submitButton = form.querySelector('.btn-cart');
+            const originalButtonText = submitButton.innerHTML;
 
-            // If cart count elements don't exist, create them or update session
-            sessionStorage.setItem('cartCount', count);
-        }
+            // Disable button to prevent double submission
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...';
 
-        // Optional: Load initial cart count on page load
-        function loadCartCount() {
-            fetch('{{ route('cart.count') }}', {
+            // Get form data
+            const formData = new FormData(form);
+
+            // Send AJAX request
+            fetch(form.action, {
+                    method: 'POST',
                     headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ||
+                            '{{ csrf_token() }}'
+                    },
+                    body: formData,
+                    credentials: 'same-origin'
                 })
                 .then(response => response.json())
                 .then(data => {
-                    updateCartCount(data.cartCount);
+                    if (data.success) {
+                        showCartNotification(data.message || 'Product added successfully!', 'success');
+                        updateCartCount(data.cartCount || 0);
+
+                        submitButton.innerHTML = '<i class="fas fa-check"></i> Added';
+                        submitButton.style.backgroundColor = '#2e7d32';
+
+                        setTimeout(() => {
+                            submitButton.innerHTML = originalButtonText;
+                            submitButton.style.backgroundColor = '';
+                            submitButton.disabled = false;
+                        }, 2000);
+                    } else {
+                        showCartNotification(data.message || 'Error adding product', 'error');
+                        submitButton.innerHTML = originalButtonText;
+                        submitButton.disabled = false;
+                    }
                 })
-                .catch(error => console.error('Error loading cart count:', error));
+                .catch(error => {
+                    console.error('Cart error:', error);
+                    showCartNotification('Something went wrong. Please try again.', 'error');
+                    submitButton.innerHTML = originalButtonText;
+                    submitButton.disabled = false;
+                });
+
+            return false;
         }
 
-        // Load cart count when page loads
-        loadCartCount();
-    });
+        function showCartNotification(message, type = 'success') {
+            let container = document.getElementById('cart-notification-container');
+
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'cart-notification-container';
+                container.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    z-index: 9999;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                    max-width: 350px;
+                `;
+                document.body.appendChild(container);
+            }
+
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                padding: 12px 16px;
+                border-radius: 4px;
+                background: ${type === 'success' ? '#4caf50' : '#f44336'};
+                color: white;
+                font-size: 0.9rem;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+                animation: slideIn 0.3s ease-out;
+            `;
+            notification.innerHTML = `
+                <strong>${type === 'success' ? '✓ Success!' : '✗ Error!'}</strong> ${message}
+            `;
+
+            container.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        function updateCartCount(count) {
+            const cartElements = document.querySelectorAll('.cart-count');
+            cartElements.forEach(el => {
+                el.textContent = count;
+                el.style.transition = 'transform 0.3s ease';
+                el.style.transform = 'scale(1.3)';
+                setTimeout(() => el.style.transform = 'scale(1)', 300);
+            });
+
+            sessionStorage.setItem('cartCount', count);
+        }
+
+        function loadCartCount() {
+            fetch('{{ route('cart.count') }}', {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => updateCartCount(data.cartCount || 0))
+                .catch(error => console.error('Error loading cart count:', error));
+        }
+    })();
 </script>
