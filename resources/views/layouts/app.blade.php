@@ -80,7 +80,7 @@
     <link rel="mask-icon" href="{{ asset('images/favicons/safari-pinned-tab.svg') }}" color="#bc450d">
     <link rel="shortcut icon" href="{{ asset('images/favicons/favicon.ico') }}">
 
-    
+
 
     <!-- Additional App Icons -->
     <link rel="icon" type="image/svg+xml" href="{{ asset('images/logo/logo.svg') }}">
@@ -111,6 +111,28 @@
     <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
     <link rel="stylesheet" href="{{ asset('css/alert.css') }}">
     <link rel="stylesheet" href="{{ asset('css/notifications.css') }}">
+
+    <!-- Preconnect to external resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+
+    <!-- DNS Prefetch -->
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+
+    <!-- Critical CSS inline -->
+    <style>
+        /* Add your critical above-the-fold CSS here */
+        :root {
+            --primary-color: #BC450D;
+            --dark-color: #541907;
+            --accent-color: #2A6D80;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+    </style>
 
     <!-- Push styles from child views -->
     @stack('styles')

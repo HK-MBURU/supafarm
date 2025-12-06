@@ -22,6 +22,8 @@ use Illuminate\Support\Facades\Route;
 
 Auth::routes();
 
+// routes for lazy-loaded sections
+Route::get('/home/section/{section}', [HomeController::class, 'loadSection'])->name('home.section');
 
 Route::get('/', [HomeController::class, 'index']);
 

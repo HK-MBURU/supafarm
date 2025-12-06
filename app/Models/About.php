@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -35,26 +34,38 @@ class About extends Model
         'images' => 'array',
         'published_at' => 'datetime',
     ];
-    
-    // Method to get formatted image URLs
+
+    // Automatically append these accessors when converting to array/JSON
+    protected $appends = ['image_urls', 'main_image_url'];
+
+    /**
+     * Get formatted image URLs
+     */
     public function getImageUrlsAttribute()
     {
         if (empty($this->images)) {
             return [];
         }
-        
+
         return array_map(function($image) {
             return asset('storage/' . $image);
         }, $this->images);
     }
-    
-    // Method to get the main image URL
+
+    /**
+     * Get the main image URL (first image or default)
+     */
     public function getMainImageUrlAttribute()
     {
         if (empty($this->images)) {
             return asset('images/default-about.jpg');
         }
-        
-        return asset('storage/' . $this->images[0]);
+
+        // Handle if images is already an array
+        if (is_array($this->images)) {
+            return asset('storage/' . $this->images[0]);
+        }
+
+        return asset('images/default-about.jpg');
     }
 }

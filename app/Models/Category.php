@@ -12,19 +12,29 @@ class Category extends Model
 
     protected $fillable = [
         'name',
+        'slug',
         'description',
         'image',
         'is_active',
     ];
+
     protected $casts = [
         'image' => 'array',
-        'original_filename' => 'array',
+        'is_active' => 'boolean',
     ];
+
+    // This tells Laravel to automatically append image_url when converting to array/JSON
+    protected $appends = ['image_url'];
 
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);
     }
+
+    /**
+     * Get the image URL attribute
+     * This accessor allows you to use $category->image_url in your views
+     */
     public function getImageUrlAttribute()
     {
         if (empty($this->image)) {
@@ -41,7 +51,9 @@ class Category extends Model
         return asset('storage/' . $this->image);
     }
 
-    // Add this method to get all images if needed
+    /**
+     * Get all images as URLs if multiple images exist
+     */
     public function getImageUrlsAttribute()
     {
         if (empty($this->image)) {
@@ -59,3 +71,6 @@ class Category extends Model
         return [asset('storage/' . $this->image)];
     }
 }
+
+
+
