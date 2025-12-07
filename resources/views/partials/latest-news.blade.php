@@ -28,7 +28,7 @@
             </div>
 
             <div class="news-content">
-                
+
 
                 <h3 class="news-title">{{ Str::limit($news->title, 60) }}</h3>
 
@@ -46,7 +46,7 @@
     <div class="view-all-container">
         <a href="{{ route('news.index') }}" class="btn-view-all-news">
             <span>View All News & Updates</span>
-            <i class="fas fa-newspaper"></i>
+
         </a>
     </div>
 </section>
