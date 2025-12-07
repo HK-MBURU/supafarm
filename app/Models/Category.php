@@ -12,12 +12,11 @@ class Category extends Model
 
     protected $fillable = [
         'name',
-        'slug',
+        'slug', // Make sure slug is here
         'description',
         'image',
         'is_active',
     ];
-
     protected $casts = [
         'image' => 'array',
         'is_active' => 'boolean',
@@ -71,6 +70,3 @@ class Category extends Model
         return [asset('storage/' . $this->image)];
     }
 }
-
-
-

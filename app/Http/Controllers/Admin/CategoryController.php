@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -36,25 +37,37 @@ class CategoryController extends Controller
             'name' => 'required|string|max:255|unique:categories,name',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'is_active' => 'boolean',
         ]);
 
         // Handle image upload
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('categories', 'public');
             $validated['image'] = $imagePath;
-            $validated['original_filename'] = $request->file('image')->getClientOriginalName();
         }
 
-        // Generate slug if needed (you can add slug field to your model)
-        // $validated['slug'] = Str::slug($validated['name']);
+        // Generate slug from name
+        $validated['slug'] = Str::slug($validated['name']);
 
+        // Handle checkbox
         $validated['is_active'] = $request->has('is_active');
 
-        Category::create($validated);
+        Log::info('Creating category with slug:', [
+            'name' => $validated['name'],
+            'slug' => $validated['slug'],
+            'is_active' => $validated['is_active']
+        ]);
 
-        return redirect()->route('admin.categories.index')
-            ->with('success', 'Category created successfully.');
+        try {
+            Category::create($validated);
+
+            return redirect()->route('admin.categories.index')
+                ->with('success', 'Category created successfully.');
+        } catch (\Exception $e) {
+            Log::error('Category creation failed: ' . $e->getMessage());
+
+            return back()->withInput()
+                ->with('error', 'Failed to create category. Error: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -86,7 +99,6 @@ class CategoryController extends Controller
             'name' => 'required|string|max:255|unique:categories,name,' . $category->id,
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'is_active' => 'boolean',
         ]);
 
         // Handle image upload
@@ -98,9 +110,14 @@ class CategoryController extends Controller
 
             $imagePath = $request->file('image')->store('categories', 'public');
             $validated['image'] = $imagePath;
-            $validated['original_filename'] = $request->file('image')->getClientOriginalName();
         }
 
+        // Update slug only if name changed
+        if ($request->name !== $category->name) {
+            $validated['slug'] = Str::slug($validated['name']);
+        }
+
+        // Handle checkbox
         $validated['is_active'] = $request->has('is_active');
 
         $category->update($validated);
@@ -108,7 +125,6 @@ class CategoryController extends Controller
         return redirect()->route('admin.categories.index')
             ->with('success', 'Category updated successfully.');
     }
-
     /**
      * Remove the specified resource from storage.
      */
