@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -45,10 +46,10 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'sale_price' => 'nullable|numeric|min:0',
             'stock' => 'required|integer|min:0',
-            'images' => 'nullable|array',
+            'images' => 'nullable|array|max:5',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'is_featured' => 'boolean',
-            'is_active' => 'boolean',
+            'is_featured' => 'sometimes|in:on,off,1,0,true,false', // Accept various checkbox values
+            'is_active' => 'sometimes|in:on,off,1,0,true,false', // Accept various checkbox values
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string',
         ]);
@@ -67,19 +68,31 @@ class ProductController extends Controller
             $validated['original_filename'] = $originalFilenames;
         }
 
-        // Handle boolean fields
-        $validated['is_featured'] = $request->has('is_featured');
-        $validated['is_active'] = $request->has('is_active');
+        // Handle boolean fields properly
+        $validated['is_featured'] = $request->has('is_featured') && $request->is_featured !== 'off';
+        $validated['is_active'] = $request->has('is_active') && $request->is_active !== 'off';
 
-        // Generate slug if needed
-        // $validated['slug'] = Str::slug($validated['name']);
+        // Debug: Log what's being stored
+        Log::info('Creating product with data:', [
+            'name' => $validated['name'],
+            'is_featured' => $validated['is_featured'],
+            'is_active' => $validated['is_active'],
+            'has_images' => isset($validated['image']) ? count($validated['image']) : 0
+        ]);
 
-        Product::create($validated);
+        try {
+            Product::create($validated);
 
-        return redirect()->route('admin.products.index')
-            ->with('success', 'Product created successfully.');
+            return redirect()->route('admin.products.index')
+                ->with('success', 'Product created successfully.');
+        } catch (\Exception $e) {
+            Log::error('Product creation failed: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+
+            return back()->withInput()
+                ->with('error', 'Failed to create product. Please check the logs for details.');
+        }
     }
-
     /**
      * Display the specified resource.
      */

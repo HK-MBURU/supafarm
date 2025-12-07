@@ -24,13 +24,11 @@ class Product extends Model
         'is_active',
         'meta_title',
         'meta_description',
-        'image',
-        'original_filename',
+        'image', // Only this column exists
     ];
 
     protected $casts = [
-        'image' => 'array',
-        'original_filename' => 'array',
+        'image' => 'array', // Cast JSON string to array
         'price' => 'decimal:2',
         'sale_price' => 'decimal:2',
         'is_featured' => 'boolean',
@@ -38,41 +36,47 @@ class Product extends Model
     ];
 
     protected $appends = [
-        'image_url', 
-        'image_urls', 
-        'formatted_price', 
+        'image_url',
+        'image_urls',
+        'formatted_price',
         'formatted_sale_price',
         'has_discount',
         'discount_percentage',
         'display_price'
     ];
 
+
     public function getImageUrlAttribute()
     {
-        if (empty($this->image)) {
+        $images = $this->image ?? [];
+
+        if (is_string($images)) {
+            $images = json_decode($images, true) ?? [];
+        }
+
+        if (empty($images) || !is_array($images)) {
             return null;
         }
 
-        if (is_array($this->image)) {
-            return asset('storage/' . $this->image[0]);
-        }
-
-        return asset('storage/' . $this->image);
+        // Return first image
+        return asset('storage/' . $images[0]);
     }
 
     public function getImageUrlsAttribute()
     {
-        if (empty($this->image)) {
+        $images = $this->image ?? [];
+
+        if (is_string($images)) {
+            $images = json_decode($images, true) ?? [];
+        }
+
+        if (empty($images) || !is_array($images)) {
             return [];
         }
 
-        if (is_array($this->image)) {
-            return array_map(function ($img) {
-                return asset('storage/' . $img);
-            }, $this->image);
-        }
-
-        return [asset('storage/' . $this->image)];
+        return array_map(function ($img) {
+            return asset('storage/' . $img);
+        }, $images);
     }
 
     public function getHasDiscountAttribute()

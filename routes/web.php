@@ -18,8 +18,6 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-
-
 Auth::routes();
 
 // routes for lazy-loaded sections
@@ -27,35 +25,23 @@ Route::get('/home/section/{section}', [HomeController::class, 'loadSection'])->n
 
 Route::get('/', [HomeController::class, 'index']);
 
+// FIXED PRODUCT ROUTES - More specific routes first
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::get('/products/view/{id}', [ProductController::class, 'view'])->name('products.view');
-
-Route::get('/products/{category}', [ProductController::class, 'show'])->name('products.category');
-
-
-
-
-
-// Category products page
 Route::get('/products/category/{category}', [ProductController::class, 'show'])->name('products.category');
-// Check this line in your routes/web.php
 Route::get('/productsPage/{slug}', [ProductController::class, 'showProductsBySlug'])->name('products.page');
-// Individual product page
+// Keep this last - it's the most generic
 Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
 
 // Cart routes
 Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
-
 Route::get('/cart/count', [CartController::class, 'getCount'])->name('cart.count');
-
 
 Route::get('/about', [AboutController::class, 'index'])->name('about.index');
 
 Route::get('/contact', function () {
     return view('contact');
 });
-
-
 
 Route::get('/search', function () {
     $query = request('query');
@@ -77,45 +63,25 @@ Route::get('/search', function () {
     ]);
 })->name('search');
 
-
-
 // Cart Routes with AJAX support
 Route::group(['prefix' => 'cart'], function () {
-    // Main cart page
     Route::get('/', [CartController::class, 'index'])->name('cart.index');
-
-    // Add product to cart (AJAX)
     Route::post('/add', [CartController::class, 'add'])->name('cart.add');
-
-    // AJAX routes for dynamic updates
     Route::put('/update-quantity/{cartItem}', [CartController::class, 'updateQuantity'])->name('cart.update.quantity');
     Route::delete('/remove-item/{cartItem}', [CartController::class, 'removeItem'])->name('cart.remove.item');
     Route::delete('/clear-cart', [CartController::class, 'clearCart'])->name('cart.clear.ajax');
-
-    // Fallback routes for non-JavaScript users
     Route::put('/update/{cartItem}', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/remove/{cartItem}', [CartController::class, 'remove'])->name('cart.remove');
     Route::delete('/clear', [CartController::class, 'clear'])->name('cart.clear');
-
-    // Utility routes
     Route::get('/count', [CartController::class, 'getCount'])->name('cart.count');
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('cart.checkout');
 });
 
 Route::group(['prefix' => 'checkout'], function () {
-    // Checkout page
     Route::get('/', [CheckoutController::class, 'index'])->name('checkout.index');
-
-    // Process checkout (AJAX)
     Route::post('/process', [CheckoutController::class, 'process'])->name('checkout.process');
-
-    // Success page
     Route::get('/success/{orderNumber}', [CheckoutController::class, 'success'])->name('checkout.success');
 });
-
-
-
-
 
 Route::get('/contact', [ContactController::class, 'showForm'])->name('contact');
 Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
@@ -129,25 +95,20 @@ Route::get('/gallery', [GalleryController::class, 'index'])->name('gallery.index
 Route::get('/gallery/all', [GalleryController::class, 'getAllMedia'])->name('gallery.all');
 Route::get('/gallery/{id}', [GalleryController::class, 'show'])->name('gallery.show');
 
-
-
-
 // admin routes
 Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin'], 'as' => 'admin.'], function () {
-    // Dashboard
     Route::get('/supafarm-admin', [AdminController::class, 'index'])->name('supafarm');
 
     // Categories
     Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class);
     Route::patch('categories/{category}/toggle-status', [\App\Http\Controllers\Admin\CategoryController::class, 'toggleStatus'])->name('categories.toggleStatus');
 
-    // Products
-    Route::resource('products', \App\Http\Controllers\Admin\ProductController::class);
-    Route::get('products/featured', [\App\Http\Controllers\Admin\ProductController::class, 'featured'])->name('products.featured');
+    // Products - FIXED ORDER
     Route::get('products/featured', [\App\Http\Controllers\Admin\ProductController::class, 'featured'])->name('products.featured');
     Route::patch('products/{product}/toggle-featured', [\App\Http\Controllers\Admin\ProductController::class, 'toggleFeatured'])->name('products.toggleFeatured');
     Route::patch('products/{product}/toggle-status', [\App\Http\Controllers\Admin\ProductController::class, 'toggleStatus'])->name('products.toggleStatus');
     Route::patch('products/{product}/stock', [\App\Http\Controllers\Admin\ProductController::class, 'updateStock'])->name('products.updateStock');
+    Route::resource('products', \App\Http\Controllers\Admin\ProductController::class);
 
     // Orders
     Route::resource('orders', \App\Http\Controllers\Admin\OrderController::class);
@@ -160,13 +121,9 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin'], 'as' => 'a
     Route::patch('orders/{order}/mark-delivered', [\App\Http\Controllers\Admin\OrderController::class, 'markAsDelivered'])->name('orders.markAsDelivered');
     Route::patch('orders/{order}/cancel', [\App\Http\Controllers\Admin\OrderController::class, 'cancel'])->name('orders.cancel');
     Route::get('orders/statistics', [\App\Http\Controllers\Admin\OrderController::class, 'statistics'])->name('orders.statistics');
-
-    // Bulk Actions for Orders
     Route::post('orders/bulk/confirm', [\App\Http\Controllers\Admin\OrderController::class, 'bulkConfirm'])->name('orders.bulk.confirm');
     Route::post('orders/bulk/processing', [\App\Http\Controllers\Admin\OrderController::class, 'bulkProcessing'])->name('orders.bulk.processing');
     Route::post('orders/bulk/cancel', [\App\Http\Controllers\Admin\OrderController::class, 'bulkCancel'])->name('orders.bulk.cancel');
-
-
 
     // User Profile
     Route::get('profile', [\App\Http\Controllers\Admin\ProfileController::class, 'edit'])->name('profile.edit');
@@ -196,19 +153,15 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin'], 'as' => 'a
         Route::get('/{contact}/edit', [\App\Http\Controllers\Admin\ContactController::class, 'edit'])->name('edit');
         Route::put('/{contact}', [\App\Http\Controllers\Admin\ContactController::class, 'update'])->name('update');
         Route::delete('/{contact}', [\App\Http\Controllers\Admin\ContactController::class, 'destroy'])->name('destroy');
-
-        // Bulk Actions
         Route::post('/bulk-delete', [\App\Http\Controllers\Admin\ContactController::class, 'bulkDestroy'])->name('bulk.destroy');
         Route::post('/mark-read', [\App\Http\Controllers\Admin\ContactController::class, 'markAsRead'])->name('mark.read');
         Route::post('/mark-unread', [\App\Http\Controllers\Admin\ContactController::class, 'markAsUnread'])->name('mark.unread');
-
-        // Export
         Route::get('/export', [\App\Http\Controllers\Admin\ContactController::class, 'export'])->name('export');
     });
 
     // Media Routes
-   Route::resource('media', \App\Http\Controllers\Admin\MediaController::class)->parameters([
-        'media' => 'media' // This tells Laravel to use 'media' instead of 'medium'
+    Route::resource('media', \App\Http\Controllers\Admin\MediaController::class)->parameters([
+        'media' => 'media'
     ]);
     Route::post('media/order', [\App\Http\Controllers\Admin\MediaController::class, 'updateOrder'])->name('media.updateOrder');
     Route::patch('media/{media}/toggle-status', [\App\Http\Controllers\Admin\MediaController::class, 'toggleStatus'])->name('media.toggle-status');
